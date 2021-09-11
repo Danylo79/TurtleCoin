@@ -5,26 +5,27 @@ import dev.dankom.cc.chain.wallet.Wallet;
 import dev.dankom.cc.chain.wallet.transaction.Transaction;
 import dev.dankom.cc.chain.wallet.transaction.TransactionInput;
 import dev.dankom.cc.chain.wallet.transaction.TransactionOutput;
+import dev.dankom.cc.coin.Coin;
 import dev.dankom.logger.LogManager;
 import dev.dankom.logger.abztract.DefaultLogger;
 import dev.dankom.logger.interfaces.ILogger;
+import dev.dankom.util.general.DataStructureAdapter;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class BlockChain {
-    public ArrayList<Block> blockchain = new ArrayList<>();
-    public final Wallet coinbase;
-
     public static int difficulty;
     public static float minimumTransaction;
     public static final ILogger logger = LogManager.addLogger("BlockChain", new DefaultLogger());
 
+    public static Wallet coinbase;
+    public static ArrayList<Block> blockchain = new ArrayList<>();
     public static HashMap<String, TransactionOutput> UTXOs = new HashMap<>();
-
-    public Transaction genesisTransaction;
+    public static Transaction genesisTransaction;
 
     public static void main(String[] arhs) {
         new BlockChain(3, 1.0f);
@@ -35,15 +36,17 @@ public class BlockChain {
         this.difficulty = difficulty;
         this.minimumTransaction = minimumTransaction;
 
-        this.coinbase = new Wallet();
+        this.coinbase = new Wallet("Coinbase");
 
-        Wallet walletA = new Wallet();
-        Wallet walletB = new Wallet();
-        sendFunds(coinbase, walletA, 1000000000f);
-        sendFunds(walletA, walletB, 100f);
+        Wallet walletA = new Wallet("WalletA");
+        Wallet walletB = new Wallet("WalletB");
+
+        Coin c = new Coin(walletA).mineBlock(difficulty);
+        sendFunds(walletA, walletB, DataStructureAdapter.arrayToList(c));
+        sendFunds(walletB, walletA, DataStructureAdapter.arrayToList(c));
     }
 
-    public Block makeGenesisTransaction(Wallet sender, Wallet recipient, float value) {
+    public Block makeGenesisTransaction(Wallet sender, Wallet recipient, List<Coin> value) {
         logger.info("BlockChain", "Created genesis block");
         genesisTransaction = new Transaction(sender.publicKey, recipient.publicKey, value, null);
         genesisTransaction.generateSignature(coinbase.privateKey);
@@ -57,7 +60,7 @@ public class BlockChain {
         return genesis;
     }
 
-    public Block sendFunds(Wallet sender, Wallet recipient, float value) {
+    public Block sendFunds(Wallet sender, Wallet recipient, List<Coin> value) {
         String prevHash = null;
         try {
             prevHash = blockchain.get(blockchain.size() - 1).hash;
@@ -65,8 +68,7 @@ public class BlockChain {
         return sendFunds(sender, recipient, value, prevHash);
     }
 
-    public Block sendFunds(Wallet sender, Wallet recipient, float value, String prevHash) {
-        logger.info("BlockChain", "Sent " + value + " coin from " + sender + " to " + recipient);
+    public Block sendFunds(Wallet sender, Wallet recipient, List<Coin> value, String prevHash) {
         if (genesisTransaction == null) {
             return makeGenesisTransaction(sender, recipient, value);
         } else {

@@ -1,17 +1,19 @@
 package dev.dankom.cc.chain.wallet.transaction;
 
+import dev.dankom.cc.coin.Coin;
 import dev.dankom.cc.util.StringUtil;
 
 import java.security.PublicKey;
+import java.util.List;
 
 public class TransactionOutput {
     public String id;
     public PublicKey recipient;
-    public float value;
+    public List<Coin> value;
     public String parentTransactionId;
 
     //Constructor
-    public TransactionOutput(PublicKey recipient, float value, String parentTransactionId) {
+    public TransactionOutput(PublicKey recipient, List<Coin> value, String parentTransactionId) {
         this.recipient = recipient;
         this.value = value;
         this.parentTransactionId = parentTransactionId;

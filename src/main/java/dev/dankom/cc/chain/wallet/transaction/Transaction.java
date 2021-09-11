@@ -1,18 +1,20 @@
 package dev.dankom.cc.chain.wallet.transaction;
 
 import dev.dankom.cc.chain.BlockChain;
+import dev.dankom.cc.coin.Coin;
 import dev.dankom.cc.util.StringUtil;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Transaction {
 
     public String transactionId;
     public PublicKey sender;
     public PublicKey recipient;
-    public float value;
+    public List<Coin> value;
     public byte[] signature;
 
     public ArrayList<TransactionInput> inputs;
@@ -20,7 +22,7 @@ public class Transaction {
 
     private static int sequence = 0;
 
-    public Transaction(PublicKey from, PublicKey to, float value, ArrayList<TransactionInput> inputs) {
+    public Transaction(PublicKey from, PublicKey to, List<Coin> value, ArrayList<TransactionInput> inputs) {
         this.sender = from;
         this.recipient = to;
         this.value = value;
@@ -28,6 +30,12 @@ public class Transaction {
     }
 
     public boolean processTransaction() {
+        for (Coin c : value) {
+            if (!c.isValid()) {
+                return false;
+            }
+        }
+
         if (verifySignature() == false) {
             return false;
         }
@@ -36,12 +44,11 @@ public class Transaction {
             i.UTXO = BlockChain.UTXOs.get(i.transactionOutputId);
         }
 
-        if (getInputsValue() < BlockChain.minimumTransaction) {
-            return false;
+        List<Coin> leftOver = new ArrayList<>();
+        for (int i = 0; i < getInputsValue().size() - value.size(); i++) {
+            leftOver.add(getInputsValue().get(i));
         }
-
-        float leftOver = getInputsValue() - value;
-        transactionId = caclulateHash();
+        transactionId = calculateHash();
         outputs.add(new TransactionOutput(this.recipient, value, transactionId));
         outputs.add(new TransactionOutput(this.sender, leftOver, transactionId));
 
@@ -57,11 +64,13 @@ public class Transaction {
         return true;
     }
 
-    public float getInputsValue() {
-        float total = 0;
+    public List<Coin> getInputsValue() {
+        List<Coin> total = new ArrayList<>();
         for (TransactionInput i : inputs) {
             if (i.UTXO == null) continue;
-            total += i.UTXO.value;
+            for (Coin c : i.UTXO.value) {
+                total.add(c);
+            }
         }
         return total;
     }
@@ -76,15 +85,17 @@ public class Transaction {
         return StringUtil.verifyECDSASig(sender, data, signature);
     }
 
-    public float getOutputsValue() {
-        float total = 0;
+    public List<Coin> getOutputsValue() {
+        List<Coin> total = new ArrayList<>();
         for (TransactionOutput o : outputs) {
-            total += o.value;
+            for (Coin c : o.value) {
+                total.add(c);
+            }
         }
         return total;
     }
 
-    private String caclulateHash() {
+    private String calculateHash() {
         sequence++;
         return StringUtil.applySha256(StringUtil.getStringFromKey(sender) + StringUtil.getStringFromKey(recipient) + value + sequence);
     }
