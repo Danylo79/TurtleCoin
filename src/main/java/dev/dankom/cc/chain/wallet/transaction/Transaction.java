@@ -1,4 +1,4 @@
-package dev.dankom.cc.wallet.transaction;
+package dev.dankom.cc.chain.wallet.transaction;
 
 import dev.dankom.cc.chain.BlockChain;
 import dev.dankom.cc.util.StringUtil;
@@ -15,12 +15,11 @@ public class Transaction {
     public float value;
     public byte[] signature;
 
-    public ArrayList<TransactionInput> inputs = new ArrayList<TransactionInput>();
-    public ArrayList<TransactionOutput> outputs = new ArrayList<TransactionOutput>();
+    public ArrayList<TransactionInput> inputs;
+    public ArrayList<TransactionOutput> outputs = new ArrayList<>();
 
-    private static int sequence = 0; //A rough count of how many transactions have been generated
+    private static int sequence = 0;
 
-    // Constructor:
     public Transaction(PublicKey from, PublicKey to, float value, ArrayList<TransactionInput> inputs) {
         this.sender = from;
         this.recipient = to;
@@ -29,9 +28,7 @@ public class Transaction {
     }
 
     public boolean processTransaction() {
-
         if (verifySignature() == false) {
-            System.out.println("#Transaction Signature failed to verify");
             return false;
         }
 
@@ -40,8 +37,6 @@ public class Transaction {
         }
 
         if (getInputsValue() < BlockChain.minimumTransaction) {
-            System.out.println("Transaction Inputs too small: " + getInputsValue());
-            System.out.println("Please enter the amount greater than " + BlockChain.minimumTransaction);
             return false;
         }
 

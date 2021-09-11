@@ -1,9 +1,9 @@
-package dev.dankom.cc.wallet;
+package dev.dankom.cc.chain.wallet;
 
 import dev.dankom.cc.chain.BlockChain;
-import dev.dankom.cc.wallet.transaction.Transaction;
-import dev.dankom.cc.wallet.transaction.TransactionInput;
-import dev.dankom.cc.wallet.transaction.TransactionOutput;
+import dev.dankom.cc.chain.wallet.transaction.Transaction;
+import dev.dankom.cc.chain.wallet.transaction.TransactionInput;
+import dev.dankom.cc.chain.wallet.transaction.TransactionOutput;
 
 import java.security.*;
 import java.security.spec.ECGenParameterSpec;

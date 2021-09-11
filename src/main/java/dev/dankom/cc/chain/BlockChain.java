@@ -1,7 +1,13 @@
 package dev.dankom.cc.chain;
 
 import dev.dankom.cc.chain.block.Block;
-import dev.dankom.cc.wallet.transaction.TransactionOutput;
+import dev.dankom.cc.chain.wallet.Wallet;
+import dev.dankom.cc.chain.wallet.transaction.Transaction;
+import dev.dankom.cc.chain.wallet.transaction.TransactionInput;
+import dev.dankom.cc.chain.wallet.transaction.TransactionOutput;
+import dev.dankom.logger.LogManager;
+import dev.dankom.logger.abztract.DefaultLogger;
+import dev.dankom.logger.interfaces.ILogger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.security.Security;
@@ -9,33 +15,136 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class BlockChain {
-    public static int difficulty;
-    public static float minimumTransaction = 0.1f;
+    public ArrayList<Block> blockchain = new ArrayList<>();
+    public final Wallet coinbase;
 
-    public static ArrayList<Block> blockchain = new ArrayList<>();
+    public static int difficulty;
+    public static float minimumTransaction;
+    public static final ILogger logger = LogManager.addLogger("BlockChain", new DefaultLogger());
+
     public static HashMap<String, TransactionOutput> UTXOs = new HashMap<>();
 
-    public BlockChain(int difficulty) {
-        this.difficulty = difficulty;
+    public Transaction genesisTransaction;
 
+    public static void main(String[] arhs) {
+        new BlockChain(3, 1.0f);
+    }
+
+    public BlockChain(int difficulty, float minimumTransaction) {
         Security.addProvider(new BouncyCastleProvider());
+        this.difficulty = difficulty;
+        this.minimumTransaction = minimumTransaction;
+
+        this.coinbase = new Wallet();
+
+        Wallet walletA = new Wallet();
+        Wallet walletB = new Wallet();
+        sendFunds(coinbase, walletA, 1000000000f);
+        sendFunds(walletA, walletB, 100f);
+    }
+
+    public Block makeGenesisTransaction(Wallet sender, Wallet recipient, float value) {
+        logger.info("BlockChain", "Created genesis block");
+        genesisTransaction = new Transaction(sender.publicKey, recipient.publicKey, value, null);
+        genesisTransaction.generateSignature(coinbase.privateKey);
+        genesisTransaction.transactionId = "0";
+        genesisTransaction.outputs.add(new TransactionOutput(genesisTransaction.recipient, genesisTransaction.value, genesisTransaction.transactionId));
+        UTXOs.put(genesisTransaction.outputs.get(0).id, genesisTransaction.outputs.get(0));
+
+        Block genesis = new Block("0");
+        genesis.addTransaction(genesisTransaction);
+        addBlock(genesis);
+        return genesis;
+    }
+
+    public Block sendFunds(Wallet sender, Wallet recipient, float value) {
+        String prevHash = null;
+        try {
+            prevHash = blockchain.get(blockchain.size() - 1).hash;
+        } catch (IndexOutOfBoundsException e) {}
+        return sendFunds(sender, recipient, value, prevHash);
+    }
+
+    public Block sendFunds(Wallet sender, Wallet recipient, float value, String prevHash) {
+        logger.info("BlockChain", "Sent " + value + " coin from " + sender + " to " + recipient);
+        if (genesisTransaction == null) {
+            return makeGenesisTransaction(sender, recipient, value);
+        } else {
+            Block block = new Block(prevHash);
+            block.addTransaction(sender.sendFunds(recipient.publicKey, value));
+            addBlock(block);
+            if (!isChainValid()) {
+                throw new Error("Failed to add block");
+            }
+            return block;
+        }
     }
 
     public void addBlock(Block block) {
         block.mineBlock(difficulty);
         blockchain.add(block);
+        if (isChainValid()) {
+            blockchain.remove(block);
+        }
     }
 
-    public boolean isChainValid() {
-        boolean flag = false;
-        for (int i = 0; i < blockchain.size(); i++) {
-            String previousHash = i == 0 ? "0" : blockchain.get(i - 1).getHash();
-            Block block = blockchain.get(i);
-            flag = block.getHash().equals(block.calculateBlockHash())
-                    && previousHash.equals(block.getPreviousHash())
-                    && block.getHash().substring(0, difficulty).equals(new String(new char[difficulty]).replace('\0', '0'));
-            if (!flag) break;
+    public Boolean isChainValid() {
+        Block currentBlock;
+        Block previousBlock;
+        String hashTarget = new String(new char[difficulty]).replace('\0', '0');
+        HashMap<String, TransactionOutput> tempUTXOs = new HashMap<>();
+        tempUTXOs.put(genesisTransaction.outputs.get(0).id, genesisTransaction.outputs.get(0));
+        for (int i = 1; i < blockchain.size(); i++) {
+
+            currentBlock = blockchain.get(i);
+            previousBlock = blockchain.get(i - 1);
+            if (!currentBlock.hash.equals(currentBlock.calculateHash())) {
+                return false;
+            }
+            if (!previousBlock.hash.equals(currentBlock.previousHash)) {
+                return false;
+            }
+            if (!currentBlock.hash.substring(0, difficulty).equals(hashTarget)) {
+                return false;
+            }
+
+            TransactionOutput tempOutput;
+            for (int t = 0; t < currentBlock.transactions.size(); t++) {
+                Transaction currentTransaction = currentBlock.transactions.get(t);
+
+                if (!currentTransaction.verifySignature()) {
+                    return false;
+                }
+                if (currentTransaction.getInputsValue() != currentTransaction.getOutputsValue()) {
+                    return false;
+                }
+
+                for (TransactionInput input : currentTransaction.inputs) {
+                    tempOutput = tempUTXOs.get(input.transactionOutputId);
+
+                    if (tempOutput == null) {
+                        return false;
+                    }
+
+                    if (input.UTXO.value != tempOutput.value) {
+                        return false;
+                    }
+
+                    tempUTXOs.remove(input.transactionOutputId);
+                }
+
+                for (TransactionOutput output : currentTransaction.outputs) {
+                    tempUTXOs.put(output.id, output);
+                }
+
+                if (currentTransaction.outputs.get(0).recipient != currentTransaction.recipient) {
+                    return false;
+                }
+                if (currentTransaction.outputs.get(1).recipient != currentTransaction.sender) {
+                    return false;
+                }
+            }
         }
-        return flag;
+        return true;
     }
 }
