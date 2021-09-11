@@ -1,4 +1,4 @@
-package dev.dankom.cc.chain.transaction;
+package dev.dankom.cc.wallet.transaction;
 
 import dev.dankom.cc.util.StringUtil;
 
@@ -18,9 +18,7 @@ public class TransactionOutput {
         this.id = StringUtil.applySha256(StringUtil.getStringFromKey(reciepient) + value + parentTransactionId);
     }
 
-    //Check if coin belongs to you
     public boolean isMine(PublicKey publicKey) {
         return (publicKey == reciepient);
     }
-
 }

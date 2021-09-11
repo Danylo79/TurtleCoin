@@ -1,63 +1,51 @@
 package dev.dankom.cc.chain.block;
 
-import dev.dankom.cc.chain.transaction.Transaction;
 import dev.dankom.cc.util.StringUtil;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import static dev.dankom.cc.chain.block.BlockChain.logger;
-
 public class Block {
-    public String hash;
-    public String previousHash;
-    public String merkleRoot;
-    public List<Transaction> transactions = new ArrayList<>();
-    public long timeStamp;
-    public int nonce;
+    private String hash;
+    private String previousHash;
+    private String data;
+    private long timeStamp;
+    private int nonce;
 
-    public Block(String previousHash) {
+    public Block(String data, String previousHash, long timeStamp) {
+        this.data = data;
         this.previousHash = previousHash;
-        this.timeStamp = new Date().getTime();
-
-        this.hash = calculateHash();
-    }
-
-    public Block(String hash, String previousHash, String merkleRoot, List<Transaction> transactions, long timeStamp, int nonce) {
-        this.hash = hash;
-        this.previousHash = previousHash;
-        this.merkleRoot = merkleRoot;
-        this.transactions = transactions;
         this.timeStamp = timeStamp;
-        this.nonce = nonce;
+        this.hash = calculateBlockHash();
     }
 
-    public String calculateHash() {
-        return StringUtil.applySha256(previousHash + timeStamp + nonce + merkleRoot);
+    public String getHash() {
+        return hash;
     }
 
-    public void mineBlock(int difficulty) {
-        merkleRoot = StringUtil.getMerkleRoot(transactions);
-        String target = StringUtil.getDificultyString(difficulty);
-        while (!hash.substring(0, difficulty).equals(target)) {
+    public String getPreviousHash() {
+        return previousHash;
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public long getTimeStamp() {
+        return timeStamp;
+    }
+
+    public int getNonce() {
+        return nonce;
+    }
+
+    public String calculateBlockHash() {
+        return StringUtil.applySha256(previousHash + timeStamp + nonce + data);
+    }
+
+    public String mineBlock(int difficulty) {
+        String prefixString = new String(new char[difficulty]).replace('\0', '0');
+        while (!hash.substring(0, difficulty).equals(prefixString)) {
             nonce++;
-            hash = calculateHash();
+            hash = calculateBlockHash();
         }
-        logger.info("ClassroomCoin", "Block Mined: " + hash);
-    }
-
-    public boolean addTransaction(Transaction transaction) {
-        if (transaction == null) return false;
-        if ((!"0".equals(previousHash))) {
-            if ((transaction.processTransaction() != true)) {
-                logger.info("ClassroomCoin", "Transaction failed to process. Discarded.");
-                return false;
-            }
-        }
-
-        transactions.add(transaction);
-        logger.info("ClassroomCoin", "Transaction Successfully added to Block");
-        return true;
+        return hash;
     }
 }

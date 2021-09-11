@@ -1,9 +1,9 @@
-package dev.dankom.cc.chain.wallet;
+package dev.dankom.cc.wallet;
 
-import dev.dankom.cc.chain.block.BlockChain;
-import dev.dankom.cc.chain.transaction.Transaction;
-import dev.dankom.cc.chain.transaction.TransactionInput;
-import dev.dankom.cc.chain.transaction.TransactionOutput;
+import dev.dankom.cc.chain.BlockChain;
+import dev.dankom.cc.wallet.transaction.Transaction;
+import dev.dankom.cc.wallet.transaction.TransactionInput;
+import dev.dankom.cc.wallet.transaction.TransactionOutput;
 
 import java.security.*;
 import java.security.spec.ECGenParameterSpec;
@@ -11,14 +11,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static dev.dankom.cc.chain.block.BlockChain.*;
-
 public class Wallet {
-
     public PrivateKey privateKey;
     public PublicKey publicKey;
 
-    public HashMap<String, TransactionOutput> UTXOs = new HashMap<String, TransactionOutput>();
+    public HashMap<String, TransactionOutput> UTXOs = new HashMap<>();
 
     public Wallet() {
         generateKeyPair();
@@ -29,7 +26,7 @@ public class Wallet {
             KeyPairGenerator keyGen = KeyPairGenerator.getInstance("ECDSA", "BC");
             SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
             ECGenParameterSpec ecSpec = new ECGenParameterSpec("prime192v1");
-            keyGen.initialize(ecSpec, random); //256
+            keyGen.initialize(ecSpec, random);
             KeyPair keyPair = keyGen.generateKeyPair();
             privateKey = keyPair.getPrivate();
             publicKey = keyPair.getPublic();
@@ -51,13 +48,11 @@ public class Wallet {
         return total;
     }
 
-    public Transaction sendFunds(PublicKey recipient, float value) {
-        logger.info("ClassroomCoin", "Sending " + value + " coins to " + recipient);
+    public Transaction sendFunds(PublicKey _recipient, float value) {
         if (getBalance() < value) {
-            logger.error("ClassroomCoin", "#Insufficient funds");
             return null;
         }
-        ArrayList<TransactionInput> inputs = new ArrayList<>();
+        ArrayList<TransactionInput> inputs = new ArrayList<TransactionInput>();
 
         float total = 0;
         for (Map.Entry<String, TransactionOutput> item : UTXOs.entrySet()) {
@@ -67,7 +62,7 @@ public class Wallet {
             if (total > value) break;
         }
 
-        Transaction newTransaction = new Transaction(publicKey, recipient, value, inputs);
+        Transaction newTransaction = new Transaction(publicKey, _recipient, value, inputs);
         newTransaction.generateSignature(privateKey);
 
         for (TransactionInput input : inputs) {
@@ -76,7 +71,4 @@ public class Wallet {
 
         return newTransaction;
     }
-
 }
-
-

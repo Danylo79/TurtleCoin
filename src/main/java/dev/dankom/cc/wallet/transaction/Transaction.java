@@ -1,25 +1,24 @@
-package dev.dankom.cc.chain.transaction;
+package dev.dankom.cc.wallet.transaction;
 
-import dev.dankom.cc.chain.block.BlockChain;
+import dev.dankom.cc.chain.BlockChain;
 import dev.dankom.cc.util.StringUtil;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.ArrayList;
 
-import static dev.dankom.cc.chain.block.BlockChain.logger;
-
 public class Transaction {
+
     public String transactionId;
     public PublicKey sender;
     public PublicKey recipient;
     public float value;
     public byte[] signature;
 
-    public ArrayList<TransactionInput> inputs;
-    public ArrayList<TransactionOutput> outputs = new ArrayList<>();
+    public ArrayList<TransactionInput> inputs = new ArrayList<TransactionInput>();
+    public ArrayList<TransactionOutput> outputs = new ArrayList<TransactionOutput>();
 
-    private static int sequence = 0;
+    private static int sequence = 0; //A rough count of how many transactions have been generated
 
     // Constructor:
     public Transaction(PublicKey from, PublicKey to, float value, ArrayList<TransactionInput> inputs) {
@@ -32,7 +31,7 @@ public class Transaction {
     public boolean processTransaction() {
 
         if (verifySignature() == false) {
-            logger.info("ClassroomCoin", "#Transaction Signature failed to verify");
+            System.out.println("#Transaction Signature failed to verify");
             return false;
         }
 
@@ -41,13 +40,13 @@ public class Transaction {
         }
 
         if (getInputsValue() < BlockChain.minimumTransaction) {
-            logger.info("ClassroomCoin", "Transaction Inputs too small: " + getInputsValue());
-            logger.info("ClassroomCoin", "Please enter the amount greater than " + BlockChain.minimumTransaction);
+            System.out.println("Transaction Inputs too small: " + getInputsValue());
+            System.out.println("Please enter the amount greater than " + BlockChain.minimumTransaction);
             return false;
         }
 
         float leftOver = getInputsValue() - value;
-        transactionId = calulateHash();
+        transactionId = caclulateHash();
         outputs.add(new TransactionOutput(this.recipient, value, transactionId));
         outputs.add(new TransactionOutput(this.sender, leftOver, transactionId));
 
@@ -90,12 +89,8 @@ public class Transaction {
         return total;
     }
 
-    private String calulateHash() {
+    private String caclulateHash() {
         sequence++;
-        return StringUtil.applySha256(
-                StringUtil.getStringFromKey(sender) +
-                        StringUtil.getStringFromKey(recipient) +
-                        value + sequence
-        );
+        return StringUtil.applySha256(StringUtil.getStringFromKey(sender) + StringUtil.getStringFromKey(recipient) + value + sequence);
     }
 }

@@ -1,4 +1,4 @@
-package dev.dankom.cc.chain.transaction;
+package dev.dankom.cc.wallet.transaction;
 
 public class TransactionInput {
     public String transactionOutputId;
