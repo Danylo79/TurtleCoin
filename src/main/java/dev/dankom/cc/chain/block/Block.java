@@ -21,6 +21,15 @@ public class Block {
         this.hash = calculateHash();
     }
 
+    public Block(String hash, String previousHash, String merkleRoot, Transaction transaction, long timeStamp, int nonce) {
+        this.hash = hash;
+        this.previousHash = previousHash;
+        this.merkleRoot = merkleRoot;
+        this.transactions.add(transaction);
+        this.timeStamp = timeStamp;
+        this.nonce = nonce;
+    }
+
     public String calculateHash() {
         return StringUtil.applySha256(previousHash + timeStamp + nonce + merkleRoot);
     }

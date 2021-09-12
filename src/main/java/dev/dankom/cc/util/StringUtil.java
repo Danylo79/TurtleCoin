@@ -2,6 +2,7 @@ package dev.dankom.cc.util;
 
 import dev.dankom.cc.chain.wallet.transaction.Transaction;
 
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -12,7 +13,7 @@ public class StringUtil {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
 
-            byte[] hash = digest.digest(input.getBytes("UTF-8"));
+            byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
 
             StringBuffer hexString = new StringBuffer();
             for (int i = 0; i < hash.length; i++) {
@@ -65,15 +66,15 @@ public class StringUtil {
         int count = transactions.size();
 
         List<String> previousTreeLayer = new ArrayList<>();
-        for(Transaction transaction : transactions) {
+        for (Transaction transaction : transactions) {
             previousTreeLayer.add(transaction.transactionId);
         }
         List<String> treeLayer = previousTreeLayer;
 
-        while(count > 1) {
+        while (count > 1) {
             treeLayer = new ArrayList<String>();
-            for(int i=1; i < previousTreeLayer.size(); i+=2) {
-                treeLayer.add(applySha256(previousTreeLayer.get(i-1) + previousTreeLayer.get(i)));
+            for (int i = 1; i < previousTreeLayer.size(); i += 2) {
+                treeLayer.add(applySha256(previousTreeLayer.get(i - 1) + previousTreeLayer.get(i)));
             }
             count = treeLayer.size();
             previousTreeLayer = treeLayer;

@@ -1,7 +1,7 @@
 package dev.dankom.cc.chain.wallet.transaction;
 
 import dev.dankom.cc.chain.BlockChain;
-import dev.dankom.cc.coin.Coin;
+import dev.dankom.cc.chain.coin.Coin;
 import dev.dankom.cc.util.StringUtil;
 
 import java.security.PrivateKey;
@@ -10,17 +10,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Transaction {
-
+    private static int sequence = 0;
     public String transactionId;
     public PublicKey sender;
     public PublicKey recipient;
     public List<Coin> value;
     public byte[] signature;
-
     public ArrayList<TransactionInput> inputs;
     public ArrayList<TransactionOutput> outputs = new ArrayList<>();
-
-    private static int sequence = 0;
 
     public Transaction(PublicKey from, PublicKey to, List<Coin> value, ArrayList<TransactionInput> inputs) {
         this.sender = from;
@@ -29,14 +26,17 @@ public class Transaction {
         this.inputs = inputs;
     }
 
-    public boolean processTransaction() {
-        for (Coin c : value) {
-            if (!c.isValid()) {
-                return false;
-            }
-        }
+    public Transaction(String transactionId, PublicKey from, PublicKey to, List<Coin> value, ArrayList<TransactionInput> inputs) {
+        this.transactionId = transactionId;
+        this.sender = from;
+        this.recipient = to;
+        this.value = value;
+        this.inputs = inputs;
+    }
 
+    public boolean processTransaction() {
         if (verifySignature() == false) {
+            BlockChain.logger.error("BlockChain", "Signature is not valid");
             return false;
         }
 
@@ -45,7 +45,7 @@ public class Transaction {
         }
 
         List<Coin> leftOver = new ArrayList<>();
-        for (int i = 0; i < getInputsValue().size() - value.size(); i++) {
+        for (int i = 0; i < (getInputsValue().size() - value.size()) - 1; i++) {
             leftOver.add(getInputsValue().get(i));
         }
         transactionId = calculateHash();
@@ -64,6 +64,16 @@ public class Transaction {
         return true;
     }
 
+    public void generateSignature(PrivateKey privateKey) {
+        String data = StringUtil.getStringFromKey(sender) + StringUtil.getStringFromKey(recipient) + value;
+        signature = StringUtil.applyECDSASig(privateKey, data);
+    }
+
+    public boolean verifySignature() {
+        String data = StringUtil.getStringFromKey(sender) + StringUtil.getStringFromKey(recipient) + value;
+        return StringUtil.verifyECDSASig(sender, data, signature);
+    }
+
     public List<Coin> getInputsValue() {
         List<Coin> total = new ArrayList<>();
         for (TransactionInput i : inputs) {
@@ -75,16 +85,6 @@ public class Transaction {
         return total;
     }
 
-    public void generateSignature(PrivateKey privateKey) {
-        String data = StringUtil.getStringFromKey(sender) + StringUtil.getStringFromKey(recipient) + value;
-        signature = StringUtil.applyECDSASig(privateKey, data);
-    }
-
-    public boolean verifySignature() {
-        String data = StringUtil.getStringFromKey(sender) + StringUtil.getStringFromKey(recipient) + value;
-        return StringUtil.verifyECDSASig(sender, data, signature);
-    }
-
     public List<Coin> getOutputsValue() {
         List<Coin> total = new ArrayList<>();
         for (TransactionOutput o : outputs) {
@@ -93,6 +93,14 @@ public class Transaction {
             }
         }
         return total;
+    }
+
+    public List<String> getCoins() {
+        List<String> coins = new ArrayList<>();
+        for (Coin c : value) {
+            coins.add(c.getHash());
+        }
+        return coins;
     }
 
     private String calculateHash() {

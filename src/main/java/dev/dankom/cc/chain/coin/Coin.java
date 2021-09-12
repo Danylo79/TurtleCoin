@@ -1,24 +1,24 @@
-package dev.dankom.cc.coin;
+package dev.dankom.cc.chain.coin;
 
 import dev.dankom.cc.chain.BlockChain;
 import dev.dankom.cc.chain.block.Block;
-import dev.dankom.cc.chain.wallet.Wallet;
 import dev.dankom.cc.chain.wallet.transaction.Transaction;
 import dev.dankom.cc.util.StringUtil;
-import dev.dankom.util.general.DataStructureAdapter;
 
 public class Coin {
-    private final Wallet wallet;
     private String hash;
-    private int nonce = 0;
+    private Integer nonce = 0;
 
-    public Coin(Wallet wallet) {
-        this.wallet = wallet;
+    public Coin(String hash) {
+        this.hash = hash;
+    }
+
+    public Coin() {
         this.hash = calculateHash();
     }
 
     public String calculateHash() {
-        return StringUtil.applySha256(wallet.UTXOs.size() + wallet.publicKey.getFormat() + nonce);
+        return StringUtil.applySha256(nonce.toString());
     }
 
     public Coin mineBlock(int difficulty) {
@@ -27,17 +27,15 @@ public class Coin {
             nonce++;
             hash = calculateHash();
         }
-
-        if (isValid()) {
-            wallet.addFunds(DataStructureAdapter.arrayToList(this));
-        }
         return this;
     }
 
     public boolean isValid() {
         if (!isMined()) {
+            BlockChain.logger.info("BlockChain", "Coin is not mined");
             return false;
         }
+
         for (Block bc : BlockChain.blockchain) {
             for (Transaction t : bc.transactions) {
                 for (Coin c : t.value) {

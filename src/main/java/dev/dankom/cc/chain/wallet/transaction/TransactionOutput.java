@@ -1,6 +1,6 @@
 package dev.dankom.cc.chain.wallet.transaction;
 
-import dev.dankom.cc.coin.Coin;
+import dev.dankom.cc.chain.coin.Coin;
 import dev.dankom.cc.util.StringUtil;
 
 import java.security.PublicKey;
@@ -21,6 +21,6 @@ public class TransactionOutput {
     }
 
     public boolean isMine(PublicKey publicKey) {
-        return (publicKey == recipient);
+        return publicKey == recipient;
     }
 }

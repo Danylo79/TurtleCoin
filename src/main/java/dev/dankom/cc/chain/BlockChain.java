@@ -1,55 +1,80 @@
 package dev.dankom.cc.chain;
 
 import dev.dankom.cc.chain.block.Block;
+import dev.dankom.cc.chain.coin.Coin;
 import dev.dankom.cc.chain.wallet.Wallet;
 import dev.dankom.cc.chain.wallet.transaction.Transaction;
 import dev.dankom.cc.chain.wallet.transaction.TransactionInput;
 import dev.dankom.cc.chain.wallet.transaction.TransactionOutput;
-import dev.dankom.cc.coin.Coin;
+import dev.dankom.cc.file.FileManager;
+import dev.dankom.cc.util.CoinUtil;
+import dev.dankom.cc.util.HashUtil;
+import dev.dankom.cc.util.KeyUtil;
+import dev.dankom.file.json.JsonFile;
+import dev.dankom.file.json.JsonObjectBuilder;
+import dev.dankom.file.type.Directory;
+import dev.dankom.interfaces.impl.ThreadMethodRunner;
 import dev.dankom.logger.LogManager;
 import dev.dankom.logger.abztract.DefaultLogger;
 import dev.dankom.logger.interfaces.ILogger;
+import dev.dankom.operation.operations.ShutdownOperation;
 import dev.dankom.util.general.DataStructureAdapter;
+import org.apache.commons.io.FileUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
+import java.io.File;
+import java.io.IOException;
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class BlockChain {
+    public static final ILogger logger = LogManager.addLogger("BlockChain", new DefaultLogger());
+    public static final List<Wallet> wallets = new ArrayList<>();
     public static int difficulty;
     public static float minimumTransaction;
-    public static final ILogger logger = LogManager.addLogger("BlockChain", new DefaultLogger());
-
-    public static Wallet coinbase;
     public static ArrayList<Block> blockchain = new ArrayList<>();
     public static HashMap<String, TransactionOutput> UTXOs = new HashMap<>();
     public static Transaction genesisTransaction;
-
-    public static void main(String[] arhs) {
-        new BlockChain(3, 1.0f);
-    }
+    public final FileManager fileManager = new FileManager();
 
     public BlockChain(int difficulty, float minimumTransaction) {
+        load();
+
         Security.addProvider(new BouncyCastleProvider());
-        this.difficulty = difficulty;
-        this.minimumTransaction = minimumTransaction;
+        BlockChain.difficulty = difficulty;
+        BlockChain.minimumTransaction = minimumTransaction;
 
-        this.coinbase = new Wallet("Coinbase");
+        wallets.add(new Wallet("Banker", "9999"));
+        wallets.add(new Wallet("Dankom", "9990"));
+        Wallet banker = getWallet("Banker");
+        Wallet dankom = getWallet("Dankom");
 
-        Wallet walletA = new Wallet("WalletA");
-        Wallet walletB = new Wallet("WalletB");
+        Coin c = new Coin();
+        while (!c.isValid()) {
+            c.mineBlock(3);
+        }
 
-        Coin c = new Coin(walletA).mineBlock(difficulty);
-        sendFunds(walletA, walletB, DataStructureAdapter.arrayToList(c));
-        sendFunds(walletB, walletA, DataStructureAdapter.arrayToList(c));
+        addFunds(dankom, DataStructureAdapter.arrayToList(c));
+        sendFunds(dankom, banker, dankom.getBalance());
+
+        new ShutdownOperation(new ThreadMethodRunner(() -> save()), "Save", logger);
+    }
+
+    public static Wallet getWallet(String username) {
+        for (Wallet w : wallets) {
+            if (w.getUsername().equalsIgnoreCase(username)) return w;
+        }
+        return null;
     }
 
     public Block makeGenesisTransaction(Wallet sender, Wallet recipient, List<Coin> value) {
         logger.info("BlockChain", "Created genesis block");
         genesisTransaction = new Transaction(sender.publicKey, recipient.publicKey, value, null);
-        genesisTransaction.generateSignature(coinbase.privateKey);
+        genesisTransaction.generateSignature(getWallet("Banker").privateKey);
         genesisTransaction.transactionId = "0";
         genesisTransaction.outputs.add(new TransactionOutput(genesisTransaction.recipient, genesisTransaction.value, genesisTransaction.transactionId));
         UTXOs.put(genesisTransaction.outputs.get(0).id, genesisTransaction.outputs.get(0));
@@ -60,11 +85,37 @@ public class BlockChain {
         return genesis;
     }
 
+    public Block addFunds(Wallet recipient, List<Coin> value) {
+        String prevHash = null;
+        try {
+            prevHash = blockchain.get(blockchain.size() - 1).hash;
+        } catch (IndexOutOfBoundsException e) {
+        }
+        return addFunds(recipient, value, prevHash);
+    }
+
+    public Block addFunds(Wallet recipient, List<Coin> value, String prevHash) {
+        if (genesisTransaction == null) {
+            return makeGenesisTransaction(getWallet("Banker"), recipient, value);
+        } else {
+            Block block = new Block(prevHash);
+            if (!block.addTransaction(recipient.addFunds(value))) {
+                throw new Error("Failed to add transaction");
+            }
+            addBlock(block);
+            if (!isChainValid()) {
+                throw new Error("Failed to add block");
+            }
+            return block;
+        }
+    }
+
     public Block sendFunds(Wallet sender, Wallet recipient, List<Coin> value) {
         String prevHash = null;
         try {
             prevHash = blockchain.get(blockchain.size() - 1).hash;
-        } catch (IndexOutOfBoundsException e) {}
+        } catch (IndexOutOfBoundsException e) {
+        }
         return sendFunds(sender, recipient, value, prevHash);
     }
 
@@ -73,7 +124,9 @@ public class BlockChain {
             return makeGenesisTransaction(sender, recipient, value);
         } else {
             Block block = new Block(prevHash);
-            block.addTransaction(sender.sendFunds(recipient.publicKey, value));
+            if (!block.addTransaction(sender.sendFunds(recipient.publicKey, value))) {
+                throw new Error("Failed to add transaction");
+            }
             addBlock(block);
             if (!isChainValid()) {
                 throw new Error("Failed to add block");
@@ -85,7 +138,7 @@ public class BlockChain {
     public void addBlock(Block block) {
         block.mineBlock(difficulty);
         blockchain.add(block);
-        if (isChainValid()) {
+        if (!isChainValid()) {
             blockchain.remove(block);
         }
     }
@@ -148,5 +201,65 @@ public class BlockChain {
             }
         }
         return true;
+    }
+
+    public void save() {
+        try {
+            FileUtils.forceDelete(new File(new Directory("./coin"), "blockchain.json"));
+        } catch (IOException e) {
+        }
+
+        JsonObjectBuilder builder = new JsonObjectBuilder();
+        JSONArray wallets = new JSONArray();
+        for (Wallet w : BlockChain.wallets) {
+            wallets.add(new JsonObjectBuilder()
+                    .addKeyValuePair("username", w.getUsername())
+                    .addKeyValuePair("pin", w.getPin())
+                    .addKeyValuePair("public", KeyUtil.toJson(w.publicKey))
+                    .addKeyValuePair("private", KeyUtil.toJson(w.privateKey))
+                    .build());
+        }
+        builder.addArray("wallets", wallets);
+
+        JSONArray blockchain = new JSONArray();
+        for (Block b : BlockChain.blockchain) {
+            Transaction t = b.transactions.get(0);
+            blockchain.add(new JsonObjectBuilder()
+                    .addKeyValuePair("hash", b.hash)
+                    .addKeyValuePair("previousHash", b.previousHash)
+                    .addKeyValuePair("merkleRoot", b.merkleRoot)
+                    .addKeyValuePair("timeStamp", b.timeStamp)
+                    .addKeyValuePair("nonce", b.nonce)
+                    .addKeyValuePair("transaction", new JsonObjectBuilder()
+                            .addKeyValuePair("transactionId", t.transactionId)
+                            .addKeyValuePair("sender", KeyUtil.toJson(t.sender))
+                            .addKeyValuePair("recipient", KeyUtil.toJson(t.recipient))
+                            .addKeyValuePair("signature", HashUtil.hexFromBytes(t.signature))
+                            .addArray("coins", t.getCoins())
+                            .build())
+                    .build());
+        }
+        builder.addArray("blockchain", blockchain);
+
+        new JsonFile(new Directory("./coin"), "blockchain", builder.build());
+    }
+
+    public void load() {
+        JsonFile json = new JsonFile(new Directory("./coin"), "blockchain");
+        for (Object o : (JSONArray) json.get().get("wallets")) {
+            JSONObject jo = (JSONObject) o;
+            wallets.add(new Wallet((String) jo.get("username"), (String) jo.get("pin"), KeyUtil.fromJsonPrivate((JSONObject) jo.get("private")), KeyUtil.fromJsonPublic((JSONObject) jo.get("public"))));
+        }
+
+        for (Object o : (JSONArray) json.get().get("blockchain")) {
+            JSONObject jo = (JSONObject) o;
+            blockchain.add(new Block(
+                    (String) jo.get("hash"),
+                    (String) jo.get("previousHash"),
+                    (String) jo.get("merkleRoot"),
+                    new Transaction((String) jo.get("transactionId"), KeyUtil.fromJsonPublic((JSONObject) jo.get("sender")), KeyUtil.fromJsonPublic((JSONObject) jo.get("recipient")), CoinUtil.fromHashes((List<String>) jo.get("coins")), null),
+                    (long) jo.get("timeStamp"),
+                    ((Long) jo.get("nonce")).intValue()));
+        }
     }
 }
