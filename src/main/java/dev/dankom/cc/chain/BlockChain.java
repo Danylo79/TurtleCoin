@@ -58,8 +58,9 @@ public class BlockChain {
         Wallet dankom = getWallet("Dankom");
         Wallet banker = getWallet("Banker");
 
-        addFunds(dankom, DataStructureAdapter.arrayToList(c));
-        sendFunds(dankom, banker, DataStructureAdapter.arrayToList(c));
+        for (Block b : blockchain) {
+            System.out.println(b.hash + (b.isValid() ? " is valid!" : " is not valid!"));
+        }
 
         new ShutdownOperation(new ThreadMethodRunner(() -> save()), "Save", logger);
     }
@@ -287,7 +288,7 @@ public class BlockChain {
             wallets.add(new Wallet((String) jo.get("username"), (String) jo.get("pin"), ((Long) jo.get("homeroom")).intValue(), ((Long) jo.get("studentNumber")).intValue(), (List<String>) jo.get("jobs"), KeyUtil.fromJsonPrivate((JSONObject) jo.get("private")), KeyUtil.fromJsonPublic((JSONObject) jo.get("public"))));
         }
 
-        for (Object o : (JSONArray) json.get().get("blocks")) {
+        for (Object o : (JSONArray) json.get().get("blockchain")) {
             JSONObject jo = (JSONObject) o;
             JSONObject transaction = (JSONObject) jo.get("transaction");
             blockchain.add(new Block(
@@ -298,7 +299,13 @@ public class BlockChain {
                         ArrayList<TransactionInput> out = new ArrayList<>();
                         for (Object transo : (JSONArray) transaction.get("inputs")) {
                             JSONObject transj = (JSONObject) transo;
-                            out.add(new TransactionInput((String) transj.get("transactionOutputId"), new TransactionOutput(KeyUtil.fromJsonPublic((JSONObject) transj.get("recipient")), CoinUtil.fromHashes((List<String>) transj.get("coins")), (String) transj.get("parentTransactionId"), (String) transj.get("id"))));
+                            JSONObject output = (JSONObject) ((JSONObject) transo).get("output");
+                            out.add(new TransactionInput((String) transj.get("transactionOutputId"),
+                                    new TransactionOutput(
+                                            KeyUtil.fromJsonPublic((JSONObject) output.get("recipient")),
+                                            CoinUtil.fromHashes((List<String>) output.get("coins")),
+                                            (String) output.get("parentTransactionId"),
+                                            (String) output.get("id"))));
                         }
                         return out;
                     }).returned()),

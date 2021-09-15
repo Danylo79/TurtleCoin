@@ -52,4 +52,8 @@ public class Block {
         transactions.add(transaction);
         return true;
     }
+
+    public boolean isValid() {
+        return hash != null && previousHash != null && merkleRoot != null && transactions != null && timeStamp != -1 && nonce != -1;
+    }
 }
