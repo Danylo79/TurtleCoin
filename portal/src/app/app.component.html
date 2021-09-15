@@ -1,0 +1,35 @@
+<mat-toolbar color="primary">
+  <button mat-icon-button aria-label="Example icon-button with menu icon">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span>Turtle Coin</span>
+  <span class="spacer-auto"></span>
+  <button mat-icon-button aria-label="Coin icon">
+    <mat-icon>monetization_on</mat-icon>
+  </button>
+  <button mat-icon-button aria-label="Dashboard Icon">
+    <mat-icon>space_dashboard</mat-icon>
+  </button>
+</mat-toolbar>
+
+<mat-grid-list cols="2" rowHeight="2:1" class="working-area" gutterSize="20">
+  <mat-grid-tile>
+
+  </mat-grid-tile>
+
+  <mat-grid-tile rowspan="2">
+    <mat-list class="coin-list">
+      <mat-list-item *ngFor="let coin of coins">
+        <div class="coin-list-item">
+          <span>{{coin.hash}}</span>
+          <span class="spacer-auto"></span>
+          <mat-icon>{{coin.status.icon}}</mat-icon>
+        </div>
+      </mat-list-item>
+    </mat-list>
+  </mat-grid-tile>
+
+  <mat-grid-tile>
+
+  </mat-grid-tile>
+</mat-grid-list>

@@ -1,0 +1,23 @@
+.spacer-auto {
+  flex: 1 1 auto;
+}
+
+mat-grid-tile {
+  border: 5px solid mediumpurple;
+}
+
+.working-area {
+  margin: 20px;
+}
+
+.coin-list {
+  display: flex;
+  flex-direction: column;
+  align-self: flex-start;
+}
+
+.coin-list-item {
+  color: mediumpurple;
+  border: 2px solid mediumpurple;
+  margin: 5px;
+}
