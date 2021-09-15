@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>dev.dankom</groupId>
-    <artifactId>ClassroomCoin</artifactId>
+    <artifactId>TurtleCoin</artifactId>
     <version>1.0</version>
 
     <parent>
