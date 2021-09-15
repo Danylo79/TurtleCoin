@@ -95,6 +95,10 @@ public class Transaction {
         return total;
     }
 
+    public List<TransactionInput> getInputs() {
+        return inputs;
+    }
+
     public List<String> getCoins() {
         List<String> coins = new ArrayList<>();
         for (Coin c : value) {

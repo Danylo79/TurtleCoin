@@ -13,4 +13,12 @@ public class CoinUtil {
         }
         return out;
     }
+
+    public static List<String> toHashes(List<Coin> coins) {
+        List<String> out = new ArrayList<>();
+        for (Coin c : coins) {
+            out.add(c.getHash());
+        }
+        return out;
+    }
 }

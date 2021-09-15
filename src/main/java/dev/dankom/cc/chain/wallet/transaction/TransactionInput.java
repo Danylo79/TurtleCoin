@@ -7,4 +7,9 @@ public class TransactionInput {
     public TransactionInput(String transactionOutputId) {
         this.transactionOutputId = transactionOutputId;
     }
+
+    public TransactionInput(String transactionOutputId, TransactionOutput UTXO) {
+        this.transactionOutputId = transactionOutputId;
+        this.UTXO = UTXO;
+    }
 }

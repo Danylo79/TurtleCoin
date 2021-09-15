@@ -18,6 +18,7 @@ import dev.dankom.logger.LogManager;
 import dev.dankom.logger.abztract.DefaultLogger;
 import dev.dankom.logger.interfaces.ILogger;
 import dev.dankom.operation.operations.ShutdownOperation;
+import dev.dankom.type.returner.Returner;
 import dev.dankom.util.general.DataStructureAdapter;
 import org.apache.commons.io.FileUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -33,7 +34,7 @@ import java.util.List;
 
 public class BlockChain {
     public static final ILogger logger = LogManager.addLogger("BlockChain", new DefaultLogger());
-    public static final List<Wallet> wallets = new ArrayList<>();
+    public static List<Wallet> wallets = new ArrayList<>();
     public static int difficulty;
     public static float minimumTransaction;
     public static ArrayList<Block> blockchain = new ArrayList<>();
@@ -48,15 +49,16 @@ public class BlockChain {
         BlockChain.difficulty = difficulty;
         BlockChain.minimumTransaction = minimumTransaction;
 
-        wallets.add(new Wallet("Banker", "9999"));
-        wallets.add(new Wallet("Dankom", "9990"));
-        Wallet banker = getWallet("Banker");
-        Wallet dankom = getWallet("Dankom");
-
         Coin c = new Coin();
         while (!c.isValid()) {
             c.mineBlock(3);
         }
+
+        wallets = new ArrayList<>();
+        wallets.add(new Wallet("Dankom", "9001", 710, 15, DataStructureAdapter.arrayToList("Admin")));
+        wallets.add(new Wallet("Banker", "9000", 0, 0, DataStructureAdapter.arrayToList("Banker")));
+        Wallet dankom = getWallet("Dankom");
+        Wallet banker = getWallet("Banker");
 
         addFunds(dankom, DataStructureAdapter.arrayToList(c));
         sendFunds(dankom, banker, dankom.getBalance());
@@ -215,6 +217,9 @@ public class BlockChain {
             wallets.add(new JsonObjectBuilder()
                     .addKeyValuePair("username", w.getUsername())
                     .addKeyValuePair("pin", w.getPin())
+                    .addKeyValuePair("homeroom", w.getHomeroom())
+                    .addKeyValuePair("studentNumber", w.getStudentNumber())
+                    .addKeyValuePair("jobs", w.getJobs())
                     .addKeyValuePair("public", KeyUtil.toJson(w.publicKey))
                     .addKeyValuePair("private", KeyUtil.toJson(w.privateKey))
                     .build());
@@ -236,6 +241,23 @@ public class BlockChain {
                             .addKeyValuePair("recipient", KeyUtil.toJson(t.recipient))
                             .addKeyValuePair("signature", HashUtil.hexFromBytes(t.signature))
                             .addArray("coins", t.getCoins())
+                            .addArray("inputs", ((Returner<List<JSONObject>>) () -> {
+                                JSONArray array = new JSONArray();
+                                if (t.getInputs() != null && !t.getInputs().isEmpty()) {
+                                    for (TransactionInput ti : t.getInputs()) {
+                                        JsonObjectBuilder inputBuilder = new JsonObjectBuilder();
+                                        JsonObjectBuilder outputBuilder = new JsonObjectBuilder();
+                                        inputBuilder.addKeyValuePair("transactionOutputId", ti.transactionOutputId);
+                                        outputBuilder.addKeyValuePair("id", ti.UTXO.id);
+                                        outputBuilder.addKeyValuePair("recipient", KeyUtil.toJson(ti.UTXO.recipient));
+                                        outputBuilder.addKeyValuePair("parentTransactionId", ti.UTXO.parentTransactionId);
+                                        outputBuilder.addArray("coins", CoinUtil.toHashes(ti.UTXO.value));
+                                        inputBuilder.addKeyValuePair("output", ti.UTXO);
+                                        array.add(inputBuilder.build());
+                                    }
+                                }
+                                return array;
+                            }).returned())
                             .build())
                     .build());
         }
@@ -248,16 +270,24 @@ public class BlockChain {
         JsonFile json = new JsonFile(new Directory("./coin"), "blockchain");
         for (Object o : (JSONArray) json.get().get("wallets")) {
             JSONObject jo = (JSONObject) o;
-            wallets.add(new Wallet((String) jo.get("username"), (String) jo.get("pin"), KeyUtil.fromJsonPrivate((JSONObject) jo.get("private")), KeyUtil.fromJsonPublic((JSONObject) jo.get("public"))));
+            wallets.add(new Wallet((String) jo.get("username"), (String) jo.get("pin"), ((Long) jo.get("homeroom")).intValue(), ((Long) jo.get("studentNumber")).intValue(), (List<String>) jo.get("jobs"), KeyUtil.fromJsonPrivate((JSONObject) jo.get("private")), KeyUtil.fromJsonPublic((JSONObject) jo.get("public"))));
         }
 
-        for (Object o : (JSONArray) json.get().get("blockchain")) {
+        for (Object o : (JSONArray) json.get().get("blocks")) {
             JSONObject jo = (JSONObject) o;
+            JSONObject transaction = (JSONObject) jo.get("transaction");
             blockchain.add(new Block(
                     (String) jo.get("hash"),
                     (String) jo.get("previousHash"),
                     (String) jo.get("merkleRoot"),
-                    new Transaction((String) jo.get("transactionId"), KeyUtil.fromJsonPublic((JSONObject) jo.get("sender")), KeyUtil.fromJsonPublic((JSONObject) jo.get("recipient")), CoinUtil.fromHashes((List<String>) jo.get("coins")), null),
+                    new Transaction((String) transaction.get("transactionId"), KeyUtil.fromJsonPublic((JSONObject) transaction.get("sender")), KeyUtil.fromJsonPublic((JSONObject) transaction.get("recipient")), CoinUtil.fromHashes((ArrayList<String>) transaction.get("coins")), ((Returner<ArrayList<TransactionInput>>) () -> {
+                        ArrayList<TransactionInput> out = new ArrayList<>();
+                        for (Object transo : (JSONArray) transaction.get("inputs")) {
+                            JSONObject transj = (JSONObject) transo;
+                            out.add(new TransactionInput((String) transj.get("transactionOutputId"), new TransactionOutput(KeyUtil.fromJsonPublic((JSONObject) transj.get("recipient")), CoinUtil.fromHashes((List<String>) transj.get("coins")), (String) transj.get("parentTransactionId"), (String) transj.get("id"))));
+                        }
+                        return out;
+                    }).returned()),
                     (long) jo.get("timeStamp"),
                     ((Long) jo.get("nonce")).intValue()));
         }

@@ -16,22 +16,31 @@ import java.util.Map;
 public class Wallet {
     private final String username;
     private final String pin;
+    private final int homeroom;
+    private final int studentNumber;
+    private final List<String> jobs;
     public PrivateKey privateKey;
     public PublicKey publicKey;
 
     public HashMap<String, TransactionOutput> UTXOs = new HashMap<>();
 
-    public Wallet(String username, String pin) {
+    public Wallet(String username, String pin, int homeroom, int studentNumber, List<String> jobs) {
         this.username = username;
         this.pin = pin;
+        this.homeroom = homeroom;
+        this.studentNumber = studentNumber;
+        this.jobs = jobs;
         generateKeyPair();
     }
 
-    public Wallet(String username, String pin, PrivateKey privateKey, PublicKey publicKey) {
+    public Wallet(String username, String pin, int homeroom, int studentNumber, List<String> jobs, PrivateKey privateKey, PublicKey publicKey) {
         this.username = username;
         this.pin = pin;
+        this.jobs = jobs;
         this.privateKey = privateKey;
         this.publicKey = publicKey;
+        this.homeroom = homeroom;
+        this.studentNumber = studentNumber;
     }
 
     public void generateKeyPair() {
@@ -129,5 +138,17 @@ public class Wallet {
 
     public String getPin() {
         return pin;
+    }
+
+    public int getHomeroom() {
+        return homeroom;
+    }
+
+    public int getStudentNumber() {
+        return studentNumber;
+    }
+
+    public List<String> getJobs() {
+        return jobs;
     }
 }
