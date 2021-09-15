@@ -5,6 +5,8 @@ import dev.dankom.cc.chain.coin.Coin;
 import dev.dankom.cc.chain.wallet.transaction.Transaction;
 import dev.dankom.cc.chain.wallet.transaction.TransactionInput;
 import dev.dankom.cc.chain.wallet.transaction.TransactionOutput;
+import dev.dankom.cc.util.HashUtil;
+import dev.dankom.cc.util.KeyUtil;
 
 import java.security.*;
 import java.security.spec.ECGenParameterSpec;
@@ -73,21 +75,18 @@ public class Wallet {
     }
 
     public Transaction sendFunds(PublicKey recipient, List<Coin> value) {
-        if (getBalance().size() < value.size() || value.isEmpty()) {
+        List<Coin> balance = getBalance();
+
+        if (balance.size() < value.size() || value.isEmpty()) {
             BlockChain.logger.error("BlockChain", "#Insufficient Funds!");
             return null;
         }
 
         ArrayList<TransactionInput> inputs = new ArrayList<>();
-
-        List<Coin> total = new ArrayList<>();
         for (Map.Entry<String, TransactionOutput> item : UTXOs.entrySet()) {
             TransactionOutput UTXO = item.getValue();
-            for (Coin c : UTXO.value) {
-                total.remove(c);
-            }
             inputs.add(new TransactionInput(UTXO.id));
-            if (total.size() > value.size()) break;
+            if (balance.size() > value.size()) break;
         }
 
         Transaction newTransaction = new Transaction(publicKey, recipient, value, inputs);
@@ -97,7 +96,7 @@ public class Wallet {
             UTXOs.remove(input.transactionOutputId);
         }
 
-        BlockChain.logger.info("BlockChain", "Sent " + value.size() + " coin(s) to " + recipient);
+        BlockChain.logger.info("BlockChain", "Sent " + value.size() + " coin(s) to " + HashUtil.hexFromBytes(recipient.getEncoded()));
 
         return newTransaction;
     }
@@ -127,7 +126,7 @@ public class Wallet {
             UTXOs.remove(input.transactionOutputId);
         }
 
-        BlockChain.logger.info("BlockChain", "Added " + value.size() + " coin(s) to " + publicKey);
+        BlockChain.logger.info("BlockChain", "Added " + value.size() + " coin(s) to " + HashUtil.hexFromBytes(publicKey.getEncoded()));
 
         return newTransaction;
     }

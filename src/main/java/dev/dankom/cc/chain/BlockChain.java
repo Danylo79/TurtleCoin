@@ -31,6 +31,7 @@ import java.security.Security;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BlockChain {
     public static final ILogger logger = LogManager.addLogger("BlockChain", new DefaultLogger());
@@ -51,17 +52,14 @@ public class BlockChain {
 
         Coin c = new Coin();
         while (!c.isValid()) {
-            c.mineBlock(3);
+            mineCoin(c);
         }
 
-        wallets = new ArrayList<>();
-        wallets.add(new Wallet("Dankom", "9001", 710, 15, DataStructureAdapter.arrayToList("Admin")));
-        wallets.add(new Wallet("Banker", "9000", 0, 0, DataStructureAdapter.arrayToList("Banker")));
         Wallet dankom = getWallet("Dankom");
         Wallet banker = getWallet("Banker");
 
         addFunds(dankom, DataStructureAdapter.arrayToList(c));
-        sendFunds(dankom, banker, dankom.getBalance());
+        sendFunds(dankom, banker, DataStructureAdapter.arrayToList(c));
 
         new ShutdownOperation(new ThreadMethodRunner(() -> save()), "Save", logger);
     }
@@ -145,6 +143,10 @@ public class BlockChain {
         }
     }
 
+    public Coin mineCoin(Coin c) {
+        return c.mineBlock(difficulty);
+    }
+
     public Boolean isChainValid() {
         Block currentBlock;
         Block previousBlock;
@@ -156,12 +158,15 @@ public class BlockChain {
             currentBlock = blockchain.get(i);
             previousBlock = blockchain.get(i - 1);
             if (!currentBlock.hash.equals(currentBlock.calculateHash())) {
+                logger.error("BlockChain", "#Current Hashes not equal");
                 return false;
             }
             if (!previousBlock.hash.equals(currentBlock.previousHash)) {
+                logger.error("BlockChain", "#Previous Hashes not equal");
                 return false;
             }
             if (!currentBlock.hash.substring(0, difficulty).equals(hashTarget)) {
+                logger.error("BlockChain", "#This block hasn't been mined");
                 return false;
             }
 
@@ -170,9 +175,11 @@ public class BlockChain {
                 Transaction currentTransaction = currentBlock.transactions.get(t);
 
                 if (!currentTransaction.verifySignature()) {
+                    logger.error("BlockChain", "#Signature on Transaction(" + t + ") is Invalid");
                     return false;
                 }
-                if (currentTransaction.getInputsValue() != currentTransaction.getOutputsValue()) {
+                if (currentTransaction.getInputsValue().size() != currentTransaction.getOutputsValue().size()) {
+                    logger.error("BlockChain", "#Referenced input Transaction(" + t + ") value is Invalid");
                     return false;
                 }
 
@@ -195,9 +202,11 @@ public class BlockChain {
                 }
 
                 if (currentTransaction.outputs.get(0).recipient != currentTransaction.recipient) {
+                    logger.error("BlockChain", "#Transaction(" + t + ") output reciepient is not who it should be");
                     return false;
                 }
                 if (currentTransaction.outputs.get(1).recipient != currentTransaction.sender) {
+                    logger.error("BlockChain", "#Transaction(" + t + ") output 'change' is not sender.");
                     return false;
                 }
             }
@@ -252,7 +261,12 @@ public class BlockChain {
                                         outputBuilder.addKeyValuePair("recipient", KeyUtil.toJson(ti.UTXO.recipient));
                                         outputBuilder.addKeyValuePair("parentTransactionId", ti.UTXO.parentTransactionId);
                                         outputBuilder.addArray("coins", CoinUtil.toHashes(ti.UTXO.value));
-                                        inputBuilder.addKeyValuePair("output", ti.UTXO);
+                                        inputBuilder.addKeyValuePair("output", new JsonObjectBuilder()
+                                                .addKeyValuePair("id", ti.UTXO.id)
+                                                .addKeyValuePair("parentTransactionId", ti.UTXO.parentTransactionId)
+                                                .addKeyValuePair("recipient", KeyUtil.toJson(ti.UTXO.recipient))
+                                                .addKeyValuePair("coins", CoinUtil.toHashes(ti.UTXO.value))
+                                                .build());
                                         array.add(inputBuilder.build());
                                     }
                                 }

@@ -44,12 +44,16 @@ public class Transaction {
             i.UTXO = BlockChain.UTXOs.get(i.transactionOutputId);
         }
 
+        List<Coin> send = new ArrayList<>();
         List<Coin> leftOver = new ArrayList<>();
-        for (int i = 0; i < (getInputsValue().size() - value.size()) - 1; i++) {
-            leftOver.add(getInputsValue().get(i));
+        int leftOverAmount = getInputsValue().size() - value.size();
+        for (int i = 0; i < leftOverAmount; i++) {
+            leftOver.add(send.get(i));
+            send.remove(i);
         }
+
         transactionId = calculateHash();
-        outputs.add(new TransactionOutput(this.recipient, value, transactionId));
+        outputs.add(new TransactionOutput(this.recipient, send, transactionId));
         outputs.add(new TransactionOutput(this.sender, leftOver, transactionId));
 
         for (TransactionOutput o : outputs) {
@@ -75,7 +79,7 @@ public class Transaction {
     }
 
     public List<Coin> getInputsValue() {
-        List<Coin> total = new ArrayList<>();
+        ArrayList<Coin> total = new ArrayList<>();
         for (TransactionInput i : inputs) {
             if (i.UTXO == null) continue;
             for (Coin c : i.UTXO.value) {
@@ -86,7 +90,7 @@ public class Transaction {
     }
 
     public List<Coin> getOutputsValue() {
-        List<Coin> total = new ArrayList<>();
+        List<Coin> total = value;
         for (TransactionOutput o : outputs) {
             for (Coin c : o.value) {
                 total.add(c);
