@@ -27,6 +27,7 @@ import org.json.simple.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.PublicKey;
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,24 +51,26 @@ public class BlockChain {
         BlockChain.difficulty = difficulty;
         BlockChain.minimumTransaction = minimumTransaction;
 
-        Coin c = new Coin();
-        while (!c.isValid()) {
-            mineCoin(c);
-        }
-
-        Wallet dankom = getWallet("Dankom");
-        Wallet banker = getWallet("Banker");
-
-        for (Block b : blockchain) {
-            System.out.println(b.hash + (b.isValid() ? " is valid!" : " is not valid!"));
-        }
-
         new ShutdownOperation(new ThreadMethodRunner(() -> save()), "Save", logger);
     }
 
     public static Wallet getWallet(String username) {
         for (Wallet w : wallets) {
             if (w.getUsername().equalsIgnoreCase(username)) return w;
+        }
+        return null;
+    }
+
+    public static Wallet getWallet(String username, String pin, int roomNumber, int studentNumber) {
+        for (Wallet w : wallets) {
+            if (w.getUsername().equalsIgnoreCase(username) && w.getPin().equalsIgnoreCase(pin) && w.getHomeroom() == roomNumber && w.getStudentNumber() == studentNumber) return w;
+        }
+        return null;
+    }
+
+    public static Wallet getWallet(PublicKey key) {
+        for (Wallet w : wallets) {
+            if (w.publicKey == key) return w;
         }
         return null;
     }
