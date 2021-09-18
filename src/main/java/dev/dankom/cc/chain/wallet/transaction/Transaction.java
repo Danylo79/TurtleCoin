@@ -2,6 +2,8 @@ package dev.dankom.cc.chain.wallet.transaction;
 
 import dev.dankom.cc.chain.BlockChain;
 import dev.dankom.cc.chain.coin.Coin;
+import dev.dankom.cc.util.HashUtil;
+import dev.dankom.cc.util.KeyUtil;
 import dev.dankom.cc.util.StringUtil;
 
 import java.security.PrivateKey;
@@ -35,7 +37,7 @@ public class Transaction {
     }
 
     public boolean processTransaction() {
-        if (verifySignature() == false) {
+        if (!verifySignature()) {
             BlockChain.logger.error("BlockChain", "Signature is not valid");
             return false;
         }
@@ -69,12 +71,12 @@ public class Transaction {
     }
 
     public void generateSignature(PrivateKey privateKey) {
-        String data = StringUtil.getStringFromKey(sender) + StringUtil.getStringFromKey(recipient) + value;
+        String data = StringUtil.getStringFromKey(sender) + StringUtil.getStringFromKey(recipient) + value.size();
         signature = StringUtil.applyECDSASig(privateKey, data);
     }
 
     public boolean verifySignature() {
-        String data = StringUtil.getStringFromKey(sender) + StringUtil.getStringFromKey(recipient) + value;
+        String data = StringUtil.getStringFromKey(sender) + StringUtil.getStringFromKey(recipient) + value.size();
         return StringUtil.verifyECDSASig(sender, data, signature);
     }
 

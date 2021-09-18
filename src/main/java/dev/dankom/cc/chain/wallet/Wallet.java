@@ -102,11 +102,6 @@ public class Wallet {
     }
 
     public Transaction addFunds(List<Coin> value) {
-        if (getBalance().size() < value.size() || value.isEmpty()) {
-            BlockChain.logger.error("BlockChain", "#Insufficient Funds!");
-            return null;
-        }
-
         ArrayList<TransactionInput> inputs = new ArrayList<>();
 
         List<Coin> total = new ArrayList<>();

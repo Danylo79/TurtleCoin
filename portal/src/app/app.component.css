@@ -3,7 +3,7 @@
 }
 
 mat-grid-tile {
-  border: 5px solid mediumpurple;
+  border: 3px solid mediumpurple;
 }
 
 .working-area {
@@ -14,10 +14,19 @@ mat-grid-tile {
   display: flex;
   flex-direction: column;
   align-self: flex-start;
+  align-items: stretch;
+  width: 100%;
 }
 
 .coin-list-item {
+  display: flex;
   color: mediumpurple;
   border: 2px solid mediumpurple;
-  margin: 5px;
+  background: white;
+  margin: 6px 5px;
+  box-shadow: none;
+  align-items: center;
+  font-size: 1.5em;
+  text-transform: uppercase;
+  text-overflow: ellipsis;
 }

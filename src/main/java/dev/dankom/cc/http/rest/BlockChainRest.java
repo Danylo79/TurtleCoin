@@ -4,6 +4,7 @@ import dev.dankom.cc.chain.BlockChain;
 import dev.dankom.cc.chain.wallet.Wallet;
 import dev.dankom.cc.util.KeyUtil;
 import dev.dankom.file.json.JsonObjectBuilder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,7 +19,6 @@ public class BlockChainRest {
     @GetMapping("/wallets/get/{authCode}")
     public String getWallet(@PathVariable String authCode) {
         String[] split = authCode.split("-");
-        System.out.println(split[0] + "-" + split[1] + "-" + split[2] + "-" + split[3]);
         Wallet w = BlockChain.getWallet(split[0], split[1], Integer.parseInt(split[2]), Integer.parseInt(split[3]));
         try {
             return new JsonObjectBuilder()
@@ -26,7 +26,8 @@ public class BlockChainRest {
                     .addKeyValuePair("pin", w.getPin())
                     .addKeyValuePair("homeroom", w.getHomeroom())
                     .addKeyValuePair("studentNumber", w.getStudentNumber())
-                    .addKeyValuePair("jobs", w.getJobs())
+                    .addArray("jobs", w.getJobs())
+                    .addArray("coins", w.getBalance())
                     .addKeyValuePair("public", KeyUtil.toJson(w.publicKey))
                     .addKeyValuePair("private", KeyUtil.toJson(w.privateKey))
                     .build().toJSONString();

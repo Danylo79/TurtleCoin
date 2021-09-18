@@ -18,15 +18,13 @@
   </mat-grid-tile>
 
   <mat-grid-tile rowspan="2">
-    <mat-list class="coin-list">
-      <mat-list-item *ngFor="let coin of coins">
-        <div class="coin-list-item">
-          <span>{{coin.hash}}</span>
-          <span class="spacer-auto"></span>
-          <mat-icon>{{coin.status.icon}}</mat-icon>
-        </div>
-      </mat-list-item>
-    </mat-list>
+    <div class="coin-list">
+      <mat-card class="coin-list-item" *ngFor="let coin of coins">
+        <span>{{coin.hash}}</span>
+        <span class="spacer-auto"></span>
+        <mat-icon color="{{coin.status.color}}">{{coin.status.icon}}</mat-icon>
+      </mat-card>
+    </div>
   </mat-grid-tile>
 
   <mat-grid-tile>

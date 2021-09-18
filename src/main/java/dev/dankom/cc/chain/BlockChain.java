@@ -51,6 +51,18 @@ public class BlockChain {
         BlockChain.difficulty = difficulty;
         BlockChain.minimumTransaction = minimumTransaction;
 
+        wallets = new ArrayList<>();
+        wallets.add(new Wallet("banker", "fdsafsadf", 0, 0, DataStructureAdapter.arrayToList("Banker")));
+        wallets.add(new Wallet("danylo.komisarenko", "oNAxLmav", 710, 14, DataStructureAdapter.arrayToList("Admin")));
+
+        addFunds(getWallet("danylo.komisarenko"), DataStructureAdapter.arrayToList(((Returner<Coin>) () -> {
+            Coin c = new Coin();
+            while (!c.isValid()) {
+                c.mineBlock(difficulty);
+            }
+            return c;
+        }).returned()));
+
         new ShutdownOperation(new ThreadMethodRunner(() -> save()), "Save", logger);
     }
 
@@ -90,7 +102,7 @@ public class BlockChain {
     }
 
     public Block addFunds(Wallet recipient, List<Coin> value) {
-        String prevHash = null;
+        String prevHash = "0";
         try {
             prevHash = blockchain.get(blockchain.size() - 1).hash;
         } catch (IndexOutOfBoundsException e) {
@@ -115,7 +127,7 @@ public class BlockChain {
     }
 
     public Block sendFunds(Wallet sender, Wallet recipient, List<Coin> value) {
-        String prevHash = null;
+        String prevHash = "0";
         try {
             prevHash = blockchain.get(blockchain.size() - 1).hash;
         } catch (IndexOutOfBoundsException e) {
@@ -314,6 +326,7 @@ public class BlockChain {
                     }).returned()),
                     (long) jo.get("timeStamp"),
                     ((Long) jo.get("nonce")).intValue()));
+            genesisTransaction = blockchain.get(0).transactions.get(0);
         }
     }
 }
