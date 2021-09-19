@@ -8,8 +8,7 @@ import dev.dankom.cc.chain.wallet.transaction.TransactionInput;
 import dev.dankom.cc.chain.wallet.transaction.TransactionOutput;
 import dev.dankom.cc.file.FileManager;
 import dev.dankom.cc.util.CoinUtil;
-import dev.dankom.cc.util.HashUtil;
-import dev.dankom.cc.util.KeyUtil;
+import dev.dankom.cc.util.JSONUtil;
 import dev.dankom.file.json.JsonFile;
 import dev.dankom.file.json.JsonObjectBuilder;
 import dev.dankom.file.type.Directory;
@@ -51,17 +50,10 @@ public class BlockChain {
         BlockChain.difficulty = difficulty;
         BlockChain.minimumTransaction = minimumTransaction;
 
-        wallets = new ArrayList<>();
-        wallets.add(new Wallet("banker", "fdsafsadf", 0, 0, DataStructureAdapter.arrayToList("Banker")));
-        wallets.add(new Wallet("danylo.komisarenko", "oNAxLmav", 710, 14, DataStructureAdapter.arrayToList("Admin")));
-
-        addFunds(getWallet("danylo.komisarenko"), DataStructureAdapter.arrayToList(((Returner<Coin>) () -> {
-            Coin c = new Coin();
-            while (!c.isValid()) {
-                c.mineBlock(difficulty);
-            }
-            return c;
-        }).returned()));
+//        wallets.add(new Wallet("danylo.komisarenko", "oNAxLmav", 710, 14, DataStructureAdapter.arrayToList("Admin")));
+//        wallets.add(new Wallet("banker", "dfshbfh", 0, 0, DataStructureAdapter.arrayToList("Banker")));
+//        addFunds(getWallet("danylo.komisarenko"), DataStructureAdapter.arrayToList(CoinUtil.mineBlock(difficulty)));
+        sendFunds(getWallet("danylo.komisarenko"), getWallet("banker"), DataStructureAdapter.arrayToList(CoinUtil.mineBlock(difficulty)));
 
         new ShutdownOperation(new ThreadMethodRunner(() -> save()), "Save", logger);
     }
@@ -75,7 +67,8 @@ public class BlockChain {
 
     public static Wallet getWallet(String username, String pin, int roomNumber, int studentNumber) {
         for (Wallet w : wallets) {
-            if (w.getUsername().equalsIgnoreCase(username) && w.getPin().equalsIgnoreCase(pin) && w.getHomeroom() == roomNumber && w.getStudentNumber() == studentNumber) return w;
+            if (w.getUsername().equalsIgnoreCase(username) && w.getPin().equalsIgnoreCase(pin) && w.getHomeroom() == roomNumber && w.getStudentNumber() == studentNumber)
+                return w;
         }
         return null;
     }
@@ -239,59 +232,26 @@ public class BlockChain {
         JsonObjectBuilder builder = new JsonObjectBuilder();
         JSONArray wallets = new JSONArray();
         for (Wallet w : BlockChain.wallets) {
-            wallets.add(new JsonObjectBuilder()
-                    .addKeyValuePair("username", w.getUsername())
-                    .addKeyValuePair("pin", w.getPin())
-                    .addKeyValuePair("homeroom", w.getHomeroom())
-                    .addKeyValuePair("studentNumber", w.getStudentNumber())
-                    .addKeyValuePair("jobs", w.getJobs())
-                    .addKeyValuePair("public", KeyUtil.toJson(w.publicKey))
-                    .addKeyValuePair("private", KeyUtil.toJson(w.privateKey))
-                    .build());
+            wallets.add(JSONUtil.buildWallet(w));
         }
         builder.addArray("wallets", wallets);
 
         JSONArray blockchain = new JSONArray();
         for (Block b : BlockChain.blockchain) {
             Transaction t = b.transactions.get(0);
-            blockchain.add(new JsonObjectBuilder()
-                    .addKeyValuePair("hash", b.hash)
-                    .addKeyValuePair("previousHash", b.previousHash)
-                    .addKeyValuePair("merkleRoot", b.merkleRoot)
-                    .addKeyValuePair("timeStamp", b.timeStamp)
-                    .addKeyValuePair("nonce", b.nonce)
-                    .addKeyValuePair("transaction", new JsonObjectBuilder()
-                            .addKeyValuePair("transactionId", t.transactionId)
-                            .addKeyValuePair("sender", KeyUtil.toJson(t.sender))
-                            .addKeyValuePair("recipient", KeyUtil.toJson(t.recipient))
-                            .addKeyValuePair("signature", HashUtil.hexFromBytes(t.signature))
-                            .addArray("coins", t.getCoins())
-                            .addArray("inputs", ((Returner<List<JSONObject>>) () -> {
-                                JSONArray array = new JSONArray();
-                                if (t.getInputs() != null && !t.getInputs().isEmpty()) {
-                                    for (TransactionInput ti : t.getInputs()) {
-                                        JsonObjectBuilder inputBuilder = new JsonObjectBuilder();
-                                        JsonObjectBuilder outputBuilder = new JsonObjectBuilder();
-                                        inputBuilder.addKeyValuePair("transactionOutputId", ti.transactionOutputId);
-                                        outputBuilder.addKeyValuePair("id", ti.UTXO.id);
-                                        outputBuilder.addKeyValuePair("recipient", KeyUtil.toJson(ti.UTXO.recipient));
-                                        outputBuilder.addKeyValuePair("parentTransactionId", ti.UTXO.parentTransactionId);
-                                        outputBuilder.addArray("coins", CoinUtil.toHashes(ti.UTXO.value));
-                                        inputBuilder.addKeyValuePair("output", new JsonObjectBuilder()
-                                                .addKeyValuePair("id", ti.UTXO.id)
-                                                .addKeyValuePair("parentTransactionId", ti.UTXO.parentTransactionId)
-                                                .addKeyValuePair("recipient", KeyUtil.toJson(ti.UTXO.recipient))
-                                                .addKeyValuePair("coins", CoinUtil.toHashes(ti.UTXO.value))
-                                                .build());
-                                        array.add(inputBuilder.build());
-                                    }
-                                }
-                                return array;
-                            }).returned())
-                            .build())
-                    .build());
+            blockchain.add(JSONUtil.buildBlock(b, t));
         }
         builder.addArray("blockchain", blockchain);
+
+        builder.addArray("UTXOs", ((Returner<List<JSONObject>>) () -> {
+            List<JSONObject> out = new ArrayList<>();
+            for (Map.Entry<String, TransactionOutput> me : UTXOs.entrySet()) {
+                out.add(JSONUtil.buildUTXO(me));
+            }
+            return out;
+        }).returned());
+
+        builder.addKeyValuePair("genesisTransaction", JSONUtil.buildTransaction(genesisTransaction));
 
         new JsonFile(new Directory("./coin"), "blockchain", builder.build());
     }
@@ -300,33 +260,22 @@ public class BlockChain {
         JsonFile json = new JsonFile(new Directory("./coin"), "blockchain");
         for (Object o : (JSONArray) json.get().get("wallets")) {
             JSONObject jo = (JSONObject) o;
-            wallets.add(new Wallet((String) jo.get("username"), (String) jo.get("pin"), ((Long) jo.get("homeroom")).intValue(), ((Long) jo.get("studentNumber")).intValue(), (List<String>) jo.get("jobs"), KeyUtil.fromJsonPrivate((JSONObject) jo.get("private")), KeyUtil.fromJsonPublic((JSONObject) jo.get("public"))));
+            wallets.add(JSONUtil.deserializeWallet(jo)
+            );
         }
 
         for (Object o : (JSONArray) json.get().get("blockchain")) {
             JSONObject jo = (JSONObject) o;
             JSONObject transaction = (JSONObject) jo.get("transaction");
-            blockchain.add(new Block(
-                    (String) jo.get("hash"),
-                    (String) jo.get("previousHash"),
-                    (String) jo.get("merkleRoot"),
-                    new Transaction((String) transaction.get("transactionId"), KeyUtil.fromJsonPublic((JSONObject) transaction.get("sender")), KeyUtil.fromJsonPublic((JSONObject) transaction.get("recipient")), CoinUtil.fromHashes((ArrayList<String>) transaction.get("coins")), ((Returner<ArrayList<TransactionInput>>) () -> {
-                        ArrayList<TransactionInput> out = new ArrayList<>();
-                        for (Object transo : (JSONArray) transaction.get("inputs")) {
-                            JSONObject transj = (JSONObject) transo;
-                            JSONObject output = (JSONObject) ((JSONObject) transo).get("output");
-                            out.add(new TransactionInput((String) transj.get("transactionOutputId"),
-                                    new TransactionOutput(
-                                            KeyUtil.fromJsonPublic((JSONObject) output.get("recipient")),
-                                            CoinUtil.fromHashes((List<String>) output.get("coins")),
-                                            (String) output.get("parentTransactionId"),
-                                            (String) output.get("id"))));
-                        }
-                        return out;
-                    }).returned()),
-                    (long) jo.get("timeStamp"),
-                    ((Long) jo.get("nonce")).intValue()));
-            genesisTransaction = blockchain.get(0).transactions.get(0);
+            blockchain.add(JSONUtil.deserializeBlock(jo, transaction));
         }
+
+        for (Object o : (JSONArray) json.get().get("UTXOs")) {
+            JSONObject jo = (JSONObject) o;
+            UTXOs.put((String) jo.get("id"), JSONUtil.deserializeTransactionOutput((JSONObject) jo.get("output")));
+        }
+
+
+        genesisTransaction = JSONUtil.deserializeTransaction((JSONObject) json.get().get("genesisTransaction"));
     }
 }

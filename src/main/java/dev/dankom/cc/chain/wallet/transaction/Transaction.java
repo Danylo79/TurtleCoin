@@ -28,11 +28,12 @@ public class Transaction {
         this.inputs = inputs;
     }
 
-    public Transaction(String transactionId, PublicKey from, PublicKey to, List<Coin> value, ArrayList<TransactionInput> inputs) {
+    public Transaction(String transactionId, PublicKey from, PublicKey to, List<Coin> value, byte[] signature, ArrayList<TransactionInput> inputs) {
         this.transactionId = transactionId;
         this.sender = from;
         this.recipient = to;
         this.value = value;
+        this.signature = signature;
         this.inputs = inputs;
     }
 
@@ -73,6 +74,9 @@ public class Transaction {
     public void generateSignature(PrivateKey privateKey) {
         String data = StringUtil.getStringFromKey(sender) + StringUtil.getStringFromKey(recipient) + value.size();
         signature = StringUtil.applyECDSASig(privateKey, data);
+
+        System.out.println(data);
+        System.out.println(verifySignature());
     }
 
     public boolean verifySignature() {

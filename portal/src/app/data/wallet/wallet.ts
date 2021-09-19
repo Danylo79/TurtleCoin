@@ -14,6 +14,8 @@ export class Wallet {
   }
 
   public fetch(): WalletReader {
-    return new WalletReader(fetch("http://localhost:8080/wallets/get/" + this.username + "-" + this.pin + "-" + this.roomNumber + "-" + this.studentNumber).then(res => res.json()));
+    let url = "http://localhost:8080/wallets/get/" + this.username + "-" + this.pin + "-" + this.roomNumber + "-" + this.studentNumber;
+    console.log("Fetching wallet for " + this.username + " using url " + url)
+    return new WalletReader(fetch(url).then(res => res.json()));
   }
 }

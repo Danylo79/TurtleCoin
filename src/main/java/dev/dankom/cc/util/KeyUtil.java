@@ -8,7 +8,7 @@ import java.security.Key;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
-import static dev.dankom.cc.util.HashUtil.bytesToHex;
+import static dev.dankom.cc.util.HashUtil.hexToBytes;
 import static dev.dankom.cc.util.HashUtil.hexFromBytes;
 
 public class KeyUtil {
@@ -21,10 +21,10 @@ public class KeyUtil {
     }
 
     public static PrivateKey fromJsonPrivate(JSONObject json) {
-        return KeyFactory.createPrivate((String) json.get("algorithm"), (String) json.get("format"), bytesToHex((String) json.get("encoded")));
+        return KeyFactory.createPrivate((String) json.get("algorithm"), (String) json.get("format"), hexToBytes((String) json.get("encoded")));
     }
 
     public static PublicKey fromJsonPublic(JSONObject json) {
-        return KeyFactory.createPublic((String) json.get("algorithm"), (String) json.get("format"), bytesToHex((String) json.get("encoded")));
+        return KeyFactory.createPublic((String) json.get("algorithm"), (String) json.get("format"), hexToBytes((String) json.get("encoded")));
     }
 }

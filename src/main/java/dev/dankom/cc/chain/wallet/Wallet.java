@@ -64,6 +64,8 @@ public class Wallet {
         List<Coin> total = new ArrayList<>();
         for (Map.Entry<String, TransactionOutput> item : BlockChain.UTXOs.entrySet()) {
             TransactionOutput UTXO = item.getValue();
+            System.out.println("Key: " + item.getKey());
+            System.out.println("Value: " + KeyUtil.toJson(item.getValue().recipient));
             if (UTXO.isMine(publicKey)) {
                 UTXOs.put(UTXO.id, UTXO);
                 for (Coin c : UTXO.value) {

@@ -21,4 +21,12 @@ public class CoinUtil {
         }
         return out;
     }
+
+    public static Coin mineBlock(int difficulty) {
+        Coin c = new Coin();
+        while (!c.isValid()) {
+            c.mineBlock(difficulty);
+        }
+        return c;
+    }
 }

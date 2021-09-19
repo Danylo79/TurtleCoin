@@ -1,6 +1,6 @@
 import {Status} from "./status";
 
-export class Coin{
+export class Coin {
   public hash: string;
   public status: Status;
 

@@ -2,6 +2,7 @@ package dev.dankom.cc.http.rest;
 
 import dev.dankom.cc.chain.BlockChain;
 import dev.dankom.cc.chain.wallet.Wallet;
+import dev.dankom.cc.util.CoinUtil;
 import dev.dankom.cc.util.KeyUtil;
 import dev.dankom.file.json.JsonObjectBuilder;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -27,7 +28,7 @@ public class BlockChainRest {
                     .addKeyValuePair("homeroom", w.getHomeroom())
                     .addKeyValuePair("studentNumber", w.getStudentNumber())
                     .addArray("jobs", w.getJobs())
-                    .addArray("coins", w.getBalance())
+                    .addArray("coins", CoinUtil.toHashes(w.getBalance()))
                     .addKeyValuePair("public", KeyUtil.toJson(w.publicKey))
                     .addKeyValuePair("private", KeyUtil.toJson(w.privateKey))
                     .build().toJSONString();
