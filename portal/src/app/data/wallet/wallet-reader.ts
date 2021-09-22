@@ -6,14 +6,12 @@ export class WalletReader {
   public jobs: string[] = [];
   public coins: string[] = [];
 
-  constructor(promise: Promise<any>) {
-      promise.then(res => {
-          this.username = res.username;
-          this.pin = res.pin;
-          this.homeroom = res.homeroom;
-          this.studentNumber = res.studentNumber;
-          this.jobs = res.jobs;
-          this.coins = res.coins;
-      });
+  constructor(res: any) {
+    this.username = res.username;
+    this.pin = res.pin;
+    this.homeroom = res.homeroom;
+    this.studentNumber = res.studentNumber;
+    this.jobs = res.jobs;
+    this.coins = res.coins;
   }
 }
