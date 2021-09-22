@@ -5,6 +5,8 @@ import dev.dankom.cc.chain.coin.Coin;
 import dev.dankom.cc.util.HashUtil;
 import dev.dankom.cc.util.KeyUtil;
 import dev.dankom.cc.util.StringUtil;
+import dev.dankom.type.returner.Returner;
+import org.jetbrains.annotations.NotNull;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -72,16 +74,23 @@ public class Transaction {
     }
 
     public void generateSignature(PrivateKey privateKey) {
-        String data = StringUtil.getStringFromKey(sender) + StringUtil.getStringFromKey(recipient) + value.size();
+        String data = buildData();
         signature = StringUtil.applyECDSASig(privateKey, data);
-
-        System.out.println(data);
-        System.out.println(verifySignature());
     }
 
     public boolean verifySignature() {
-        String data = StringUtil.getStringFromKey(sender) + StringUtil.getStringFromKey(recipient) + value.size();
+        String data = buildData();
         return StringUtil.verifyECDSASig(sender, data, signature);
+    }
+
+    public String buildData() {
+        return StringUtil.getStringFromKey(sender) + StringUtil.getStringFromKey(recipient) + ((Returner<String>) () -> {
+            String out = "";
+            for (Coin c : value) {
+                out += c.getHash();
+            }
+            return out;
+        }).returned();
     }
 
     public List<Coin> getInputsValue() {

@@ -1,18 +1,19 @@
 {
   "blockchain": [
     {
-      "timeStamp": 1632069154329,
+      "timeStamp": 1632355052073,
       "previousHash": "0",
       "merkleRoot": "0",
-      "nonce": 1431,
-      "hash": "000e774893255bc3de02cf1becc7e9cbd5da193c1d62a7ae28d8d5d5d2bba618",
+      "nonce": 3382,
+      "hash": "0002b2deba8f911706b28087ece830e511e332eaea7e66a7175cd62f39bed22c",
       "transaction": {
+        "outputs": [],
         "sender": {
           "format": "X.509",
           "algorithm": "ECDSA",
-          "encoded": "MEkwEwYHKoZIzj0CAQYIKoZIzj0DAQEDMgAE4bVn1Hjyj8FLtZIGhaPo0sZybGorbBPNMDS1Yel0eEF8ZBHDPstFrlYEw4CsErwY"
+          "encoded": "MEkwEwYHKoZIzj0CAQYIKoZIzj0DAQEDMgAEp\/b4B2c1wIt+TQLgTlRMJ+E6Iub9FFY3oJrwn1vmLKIRWCeasA9\/8k8lkk08vLa+"
         },
-        "signature": "MDQCGBuEFyA+HwSurU7flPCtTeM8fRHpfc7uBQIYeKHzDQX8XE8t1fFCQNhqPw7UJQ\/QmBuv",
+        "signature": "MDUCGQD2FMZ1eJEwSFoRR23BXtq5itpiXDY7NmcCGEnMPsgHjUVyODS5xDzE1WhmTCtW4VhgUw==",
         "coins": [
           "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9"
         ],
@@ -20,41 +21,25 @@
         "recipient": {
           "format": "X.509",
           "algorithm": "ECDSA",
-          "encoded": "MEkwEwYHKoZIzj0CAQYIKoZIzj0DAQEDMgAEzGHiDaHZV0fvTklC+DZE7zUDgLHU1ufQ6hTFeGOcJ9O1gdgVCHPl+majBs\/zJq1s"
+          "encoded": "MEkwEwYHKoZIzj0CAQYIKoZIzj0DAQEDMgAE70OM6M2d9ksWCvN020wEAdebZIMFWSOxLk7Ld\/xkZwLYM2yzO8yxBdIam0N3XAq5"
         },
         "transactionId": "0"
       }
     }
   ],
-  "UTXOs": [
-    {
-      "output": {
-        "coins": [
-          "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9"
-        ],
-        "recipient": {
-          "format": "X.509",
-          "algorithm": "ECDSA",
-          "encoded": "MEkwEwYHKoZIzj0CAQYIKoZIzj0DAQEDMgAEzGHiDaHZV0fvTklC+DZE7zUDgLHU1ufQ6hTFeGOcJ9O1gdgVCHPl+majBs\/zJq1s"
-        },
-        "id": "a0f1c5ae2deca84c593e876179e8c056353ca7fc54a280fdf5ba51ec931a0f31",
-        "parentTransactionId": "0"
-      },
-      "id": "a0f1c5ae2deca84c593e876179e8c056353ca7fc54a280fdf5ba51ec931a0f31"
-    }
-  ],
+  "UTXOs": [],
   "wallets": [
     {
       "private": {
         "format": "PKCS#8",
         "algorithm": "ECDSA",
-        "encoded": "MHsCAQAwEwYHKoZIzj0CAQYIKoZIzj0DAQEEYTBfAgEBBBgzcrv6t9DIwuLLiOCjl63A4ouXh8hPFBagCgYIKoZIzj0DAQGhNAMyAATMYeINodlXR+9OSUL4NkTvNQOAsdTW59DqFMV4Y5wn07WB2BUIc+X6ZqMGz\/MmrWw="
+        "encoded": "MHsCAQAwEwYHKoZIzj0CAQYIKoZIzj0DAQEEYTBfAgEBBBgujV5BkfTaun+4T94V886IRSLCiWsrAgigCgYIKoZIzj0DAQGhNAMyAATvQ4zozZ32SxYK83TbTAQB15tkgwVZI7EuTst3\/GRnAtgzbLM7zLEF0hqbQ3dcCrk="
       },
       "pin": "oNAxLmav",
       "public": {
         "format": "X.509",
         "algorithm": "ECDSA",
-        "encoded": "MEkwEwYHKoZIzj0CAQYIKoZIzj0DAQEDMgAEzGHiDaHZV0fvTklC+DZE7zUDgLHU1ufQ6hTFeGOcJ9O1gdgVCHPl+majBs\/zJq1s"
+        "encoded": "MEkwEwYHKoZIzj0CAQYIKoZIzj0DAQEDMgAE70OM6M2d9ksWCvN020wEAdebZIMFWSOxLk7Ld\/xkZwLYM2yzO8yxBdIam0N3XAq5"
       },
       "studentNumber": 14,
       "jobs": [
@@ -67,13 +52,13 @@
       "private": {
         "format": "PKCS#8",
         "algorithm": "ECDSA",
-        "encoded": "MHsCAQAwEwYHKoZIzj0CAQYIKoZIzj0DAQEEYTBfAgEBBBhWqgo\/bK1Ym5nvc9NAZ\/BboDIg758C3yagCgYIKoZIzj0DAQGhNAMyAAThtWfUePKPwUu1kgaFo+jSxnJsaitsE80wNLVh6XR4QXxkEcM+y0WuVgTDgKwSvBg="
+        "encoded": "MHsCAQAwEwYHKoZIzj0CAQYIKoZIzj0DAQEEYTBfAgEBBBipAitDNy8QUngzIdbJGuhuaihlH9JBTICgCgYIKoZIzj0DAQGhNAMyAASn9vgHZzXAi35NAuBOVEwn4Toi5v0UVjegmvCfW+YsohFYJ5qwD3\/yTyWSTTy8tr4="
       },
       "pin": "dfshbfh",
       "public": {
         "format": "X.509",
         "algorithm": "ECDSA",
-        "encoded": "MEkwEwYHKoZIzj0CAQYIKoZIzj0DAQEDMgAE4bVn1Hjyj8FLtZIGhaPo0sZybGorbBPNMDS1Yel0eEF8ZBHDPstFrlYEw4CsErwY"
+        "encoded": "MEkwEwYHKoZIzj0CAQYIKoZIzj0DAQEDMgAEp\/b4B2c1wIt+TQLgTlRMJ+E6Iub9FFY3oJrwn1vmLKIRWCeasA9\/8k8lkk08vLa+"
       },
       "studentNumber": 0,
       "jobs": [
@@ -84,12 +69,13 @@
     }
   ],
   "genesisTransaction": {
+    "outputs": [],
     "sender": {
       "format": "X.509",
       "algorithm": "ECDSA",
-      "encoded": "MEkwEwYHKoZIzj0CAQYIKoZIzj0DAQEDMgAE4bVn1Hjyj8FLtZIGhaPo0sZybGorbBPNMDS1Yel0eEF8ZBHDPstFrlYEw4CsErwY"
+      "encoded": "MEkwEwYHKoZIzj0CAQYIKoZIzj0DAQEDMgAEp\/b4B2c1wIt+TQLgTlRMJ+E6Iub9FFY3oJrwn1vmLKIRWCeasA9\/8k8lkk08vLa+"
     },
-    "signature": "MDQCGBuEFyA+HwSurU7flPCtTeM8fRHpfc7uBQIYeKHzDQX8XE8t1fFCQNhqPw7UJQ\/QmBuv",
+    "signature": "MDUCGQD2FMZ1eJEwSFoRR23BXtq5itpiXDY7NmcCGEnMPsgHjUVyODS5xDzE1WhmTCtW4VhgUw==",
     "coins": [
       "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9"
     ],
@@ -97,7 +83,7 @@
     "recipient": {
       "format": "X.509",
       "algorithm": "ECDSA",
-      "encoded": "MEkwEwYHKoZIzj0CAQYIKoZIzj0DAQEDMgAEzGHiDaHZV0fvTklC+DZE7zUDgLHU1ufQ6hTFeGOcJ9O1gdgVCHPl+majBs\/zJq1s"
+      "encoded": "MEkwEwYHKoZIzj0CAQYIKoZIzj0DAQEDMgAE70OM6M2d9ksWCvN020wEAdebZIMFWSOxLk7Ld\/xkZwLYM2yzO8yxBdIam0N3XAq5"
     },
     "transactionId": "0"
   }

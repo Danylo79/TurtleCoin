@@ -243,14 +243,6 @@ public class BlockChain {
         }
         builder.addArray("blockchain", blockchain);
 
-        builder.addArray("UTXOs", ((Returner<List<JSONObject>>) () -> {
-            List<JSONObject> out = new ArrayList<>();
-            for (Map.Entry<String, TransactionOutput> me : UTXOs.entrySet()) {
-                out.add(JSONUtil.buildUTXO(me));
-            }
-            return out;
-        }).returned());
-
         builder.addKeyValuePair("genesisTransaction", JSONUtil.buildTransaction(genesisTransaction));
 
         new JsonFile(new Directory("./coin"), "blockchain", builder.build());
@@ -270,12 +262,11 @@ public class BlockChain {
             blockchain.add(JSONUtil.deserializeBlock(jo, transaction));
         }
 
-        for (Object o : (JSONArray) json.get().get("UTXOs")) {
-            JSONObject jo = (JSONObject) o;
-            UTXOs.put((String) jo.get("id"), JSONUtil.deserializeTransactionOutput((JSONObject) jo.get("output")));
-        }
-
-
         genesisTransaction = JSONUtil.deserializeTransaction((JSONObject) json.get().get("genesisTransaction"));
+        for (Map.Entry<String, TransactionOutput> UTXO : UTXOs.entrySet()) {
+            if (UTXO.getValue().parentTransactionId.equals(genesisTransaction.transactionId)) {
+                genesisTransaction.outputs.add(UTXO.getValue());
+            }
+        }
     }
 }

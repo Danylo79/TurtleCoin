@@ -15,18 +15,27 @@ import java.util.List;
 import java.util.Map;
 
 public class JSONUtil {
-    public static JSONObject buildTransaction(Transaction genesisTransaction) {
+    public static JSONObject buildTransaction(Transaction transaction) {
         return new JsonObjectBuilder()
-                .addKeyValuePair("transactionId", genesisTransaction.transactionId)
-                .addKeyValuePair("sender", KeyUtil.toJson(genesisTransaction.sender))
-                .addKeyValuePair("recipient", KeyUtil.toJson(genesisTransaction.recipient))
-                .addKeyValuePair("signature", HashUtil.hexFromBytes(genesisTransaction.signature))
-                .addArray("coins", genesisTransaction.getCoins())
+                .addKeyValuePair("transactionId", transaction.transactionId)
+                .addKeyValuePair("sender", KeyUtil.toJson(transaction.sender))
+                .addKeyValuePair("recipient", KeyUtil.toJson(transaction.recipient))
+                .addKeyValuePair("signature", HashUtil.hexFromBytes(transaction.signature))
+                .addArray("coins", transaction.getCoins())
                 .addArray("inputs", ((Returner<List<JSONObject>>) () -> {
                     JSONArray array = new JSONArray();
-                    if (genesisTransaction.getInputs() != null && !genesisTransaction.getInputs().isEmpty()) {
-                        for (TransactionInput ti : genesisTransaction.getInputs()) {
+                    if (transaction.getInputs() != null && !transaction.getInputs().isEmpty()) {
+                        for (TransactionInput ti : transaction.getInputs()) {
                             array.add(buildTransactionInput(ti));
+                        }
+                    }
+                    return array;
+                }).returned())
+                .addArray("outputs", ((Returner<List<JSONObject>>) () -> {
+                    JSONArray array = new JSONArray();
+                    if (transaction.getInputs() != null && !transaction.getInputs().isEmpty()) {
+                        for (TransactionInput ti : transaction.getInputs()) {
+                            array.add(buildTransactionOutput(ti.UTXO));
                         }
                     }
                     return array;
@@ -83,21 +92,26 @@ public class JSONUtil {
                 ((Long) jo.get("nonce")).intValue());
     }
 
-    public static Transaction deserializeTransaction(JSONObject transaction) {
+    public static Transaction deserializeTransaction(JSONObject json) {
         try {
-            return new Transaction((String) transaction.get("transactionId"),
-                    KeyUtil.fromJsonPublic((JSONObject) transaction.get("sender")),
-                    KeyUtil.fromJsonPublic((JSONObject) transaction.get("recipient")),
-                    CoinUtil.fromHashes((ArrayList<String>) transaction.get("coins")),
-                    HashUtil.hexToBytes((String) transaction.get("signature")), ((Returner<ArrayList<TransactionInput>>) () -> {
-                ArrayList<TransactionInput> out = new ArrayList<>();
-                for (Object transo : (JSONArray) transaction.get("inputs")) {
+            Transaction transaction = new Transaction((String) json.get("transactionId"),
+                    KeyUtil.fromJsonPublic((JSONObject) json.get("sender")),
+                    KeyUtil.fromJsonPublic((JSONObject) json.get("recipient")),
+                    CoinUtil.fromHashes((ArrayList<String>) json.get("coins")),
+                    HashUtil.hexToBytes((String) json.get("signature")), ((Returner<ArrayList<TransactionInput>>) () -> {
+                ArrayList<TransactionInput> inputs = new ArrayList<>();
+                for (Object transo : (JSONArray) json.get("inputs")) {
                     JSONObject transj = (JSONObject) transo;
                     JSONObject output = (JSONObject) ((JSONObject) transo).get("output");
-                    out.add(deserializeTransactionInput(transj, output));
+                    inputs.add(deserializeTransactionInput(transj, output));
                 }
-                return out;
+                return inputs;
             }).returned());
+            for (Object o : (JSONArray) json.get("outputs")) {
+                JSONObject jo = (JSONObject) o;
+                transaction.outputs.add(deserializeTransactionOutput(jo));
+            }
+            return transaction;
         } catch (NullPointerException e) {
             return null;
         }

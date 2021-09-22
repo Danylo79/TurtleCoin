@@ -5,10 +5,14 @@ import dev.dankom.cc.chain.wallet.Wallet;
 import dev.dankom.cc.util.CoinUtil;
 import dev.dankom.cc.util.KeyUtil;
 import dev.dankom.file.json.JsonObjectBuilder;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @RestController
 public class BlockChainRest {
@@ -34,6 +38,27 @@ public class BlockChainRest {
                     .build().toJSONString();
         } catch (NullPointerException e) {
             return "Failed: " + e.getMessage();
+        }
+    }
+
+    @PostMapping("/auth/login")
+    public void login(String returnUrl, String username, String pin, String roomNumber, String studentNumber, HttpServletResponse response) {
+        Wallet wallet = BlockChain.getWallet(username, pin, Integer.parseInt(roomNumber), Integer.parseInt(studentNumber));
+        if (wallet != null) {
+            Cookie cookie = new Cookie("turtle-cookie", username);
+            cookie.setPath("/");
+            response.addCookie(cookie);
+            try {
+                response.sendRedirect(returnUrl);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                response.sendError(403, "Failed to authenticate");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
