@@ -1,7 +1,5 @@
 package dev.dankom.cc.util;
 
-import dev.dankom.cc.chain.wallet.transaction.Transaction;
-
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.util.ArrayList;
@@ -62,12 +60,12 @@ public class StringUtil {
         return Base64.getEncoder().encodeToString(key.getEncoded());
     }
 
-    public static String getMerkleRoot(List<Transaction> transactions) {
+    public static String getMerkleRoot(List<String> transactions) {
         int count = transactions.size();
 
         List<String> previousTreeLayer = new ArrayList<>();
-        for (Transaction transaction : transactions) {
-            previousTreeLayer.add(transaction.transactionId);
+        for (String transaction : transactions) {
+            previousTreeLayer.add(transaction);
         }
         List<String> treeLayer = previousTreeLayer;
 

@@ -1,33 +1,41 @@
 package dev.dankom.cc.chain.block;
 
-import dev.dankom.cc.chain.wallet.transaction.Transaction;
+import dev.dankom.cc.chain.coin.Coin;
 import dev.dankom.cc.util.StringUtil;
+import dev.dankom.util.general.DataStructureAdapter;
 
-import java.util.ArrayList;
+import java.security.PublicKey;
 import java.util.Date;
 
 public class Block {
     public String hash;
     public String previousHash;
     public String merkleRoot;
-    public ArrayList<Transaction> transactions = new ArrayList<>();
     public long timeStamp;
     public int nonce;
+    public PublicKey sender;
+    public PublicKey recipient;
+    public Coin coin;
 
-    public Block(String previousHash) {
+    public Block(String previousHash, PublicKey sender, PublicKey recipient, Coin coin) {
         this.previousHash = previousHash;
+        this.sender = sender;
+        this.recipient = recipient;
+        this.coin = coin;
         this.timeStamp = new Date().getTime();
 
         this.hash = calculateHash();
     }
 
-    public Block(String hash, String previousHash, String merkleRoot, Transaction transaction, long timeStamp, int nonce) {
+    public Block(String hash, String previousHash, String merkleRoot, long timeStamp, int nonce, PublicKey sender, PublicKey recipient, Coin coin) {
         this.hash = hash;
         this.previousHash = previousHash;
         this.merkleRoot = merkleRoot;
-        this.transactions.add(transaction);
         this.timeStamp = timeStamp;
         this.nonce = nonce;
+        this.sender = sender;
+        this.recipient = recipient;
+        this.coin = coin;
     }
 
     public String calculateHash() {
@@ -35,7 +43,7 @@ public class Block {
     }
 
     public void mineBlock(int difficulty) {
-        merkleRoot = StringUtil.getMerkleRoot(transactions);
+        merkleRoot = StringUtil.getMerkleRoot(DataStructureAdapter.arrayToList(""));
         String target = StringUtil.getDifficultyString(difficulty);
         while (!hash.substring(0, difficulty).equals(target)) {
             nonce++;
@@ -43,17 +51,7 @@ public class Block {
         }
     }
 
-    public boolean addTransaction(Transaction transaction) {
-        if (transaction == null) return false;
-        if (!"0".equals(previousHash) && !transaction.processTransaction()) {
-            return false;
-        }
-
-        transactions.add(transaction);
-        return true;
-    }
-
     public boolean isValid() {
-        return hash != null && previousHash != null && merkleRoot != null && transactions != null && timeStamp != -1 && nonce != -1;
+        return hash != null && previousHash != null && merkleRoot != null && timeStamp != -1 && nonce != -1;
     }
 }
