@@ -1,6 +1,7 @@
 package dev.dankom.cc.chain.block;
 
 import dev.dankom.cc.chain.coin.Coin;
+import dev.dankom.cc.util.HexUtil;
 import dev.dankom.cc.util.StringUtil;
 import dev.dankom.util.general.DataStructureAdapter;
 
@@ -53,5 +54,13 @@ public class Block {
 
     public boolean isValid() {
         return hash != null && previousHash != null && merkleRoot != null && timeStamp != -1 && nonce != -1;
+    }
+
+    public boolean isRecipient(PublicKey publicKey) {
+        return HexUtil.hexFromBytes(publicKey.getEncoded()).equals(HexUtil.hexFromBytes(recipient.getEncoded()));
+    }
+
+    public boolean isSender(PublicKey publicKey) {
+        return HexUtil.hexFromBytes(publicKey.getEncoded()).equals(HexUtil.hexFromBytes(sender.getEncoded()));
     }
 }

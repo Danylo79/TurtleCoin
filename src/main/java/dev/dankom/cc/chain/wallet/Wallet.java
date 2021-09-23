@@ -1,5 +1,7 @@
 package dev.dankom.cc.chain.wallet;
 
+import dev.dankom.cc.chain.BlockChain;
+import dev.dankom.cc.chain.block.Block;
 import dev.dankom.cc.chain.coin.Coin;
 
 import java.security.*;
@@ -51,7 +53,15 @@ public class Wallet {
     }
 
     public List<Coin> getBalance() {
-        return new ArrayList<>();
+        List<Coin> coins = new ArrayList<>();
+        for (Block b : BlockChain.blockchain) {
+            if (b.isRecipient(publicKey)) {
+                coins.add(b.coin);
+            } else if (b.isSender(publicKey)) {
+                coins.remove(b.coin);
+            }
+        }
+        return coins;
     }
 
     public String getUsername() {
