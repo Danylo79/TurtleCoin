@@ -7,6 +7,7 @@ import dev.dankom.util.general.DataStructureAdapter;
 
 import java.security.PublicKey;
 import java.util.Date;
+import java.util.List;
 
 public class Block {
     public String hash;
@@ -16,19 +17,19 @@ public class Block {
     public int nonce;
     public PublicKey sender;
     public PublicKey recipient;
-    public Coin coin;
+    public List<Coin> coins;
 
-    public Block(String previousHash, PublicKey sender, PublicKey recipient, Coin coin) {
+    public Block(String previousHash, PublicKey sender, PublicKey recipient, List<Coin> coins) {
         this.previousHash = previousHash;
         this.sender = sender;
         this.recipient = recipient;
-        this.coin = coin;
+        this.coins = coins;
         this.timeStamp = new Date().getTime();
 
         this.hash = calculateHash();
     }
 
-    public Block(String hash, String previousHash, String merkleRoot, long timeStamp, int nonce, PublicKey sender, PublicKey recipient, Coin coin) {
+    public Block(String hash, String previousHash, String merkleRoot, long timeStamp, int nonce, PublicKey sender, PublicKey recipient, List<Coin> coins) {
         this.hash = hash;
         this.previousHash = previousHash;
         this.merkleRoot = merkleRoot;
@@ -36,7 +37,7 @@ public class Block {
         this.nonce = nonce;
         this.sender = sender;
         this.recipient = recipient;
-        this.coin = coin;
+        this.coins = coins;
     }
 
     public String calculateHash() {

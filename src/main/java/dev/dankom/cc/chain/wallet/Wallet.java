@@ -52,6 +52,10 @@ public class Wallet {
         }
     }
 
+    public void sendFunds() {
+
+    }
+
     public List<Coin> getBalance() {
         List<Coin> coins = new ArrayList<>();
         for (Block b : BlockChain.blockchain) {
