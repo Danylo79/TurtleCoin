@@ -8,6 +8,7 @@ import java.security.*;
 import java.security.spec.ECGenParameterSpec;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Wallet {
     private final String username;
@@ -84,5 +85,15 @@ public class Wallet {
 
     public List<String> getJobs() {
         return jobs;
+    }
+
+    public static String createPin(int size) {
+        String out = "";
+        for (int i = 0; i <= size; i++) {
+            Random r = new Random();
+            char c = (char)(r.nextInt(26));
+            out += c;
+        }
+        return out;
     }
 }

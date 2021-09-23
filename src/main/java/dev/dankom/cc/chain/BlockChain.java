@@ -4,30 +4,18 @@ import dev.dankom.cc.chain.block.Block;
 import dev.dankom.cc.chain.coin.Coin;
 import dev.dankom.cc.chain.wallet.Wallet;
 import dev.dankom.cc.file.FileManager;
-import dev.dankom.cc.util.CoinUtil;
-import dev.dankom.file.json.JsonFile;
-import dev.dankom.file.json.JsonObjectBuilder;
-import dev.dankom.file.type.Directory;
 import dev.dankom.interfaces.impl.ThreadMethodRunner;
 import dev.dankom.logger.LogManager;
 import dev.dankom.logger.abztract.DefaultLogger;
 import dev.dankom.logger.interfaces.ILogger;
 import dev.dankom.operation.operations.ShutdownOperation;
-import dev.dankom.type.returner.Returner;
 import dev.dankom.util.general.DataStructureAdapter;
-import org.apache.commons.io.FileUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
-import java.io.File;
-import java.io.IOException;
 import java.security.PublicKey;
 import java.security.Security;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class BlockChain {
     public static final ILogger logger = LogManager.addLogger("BlockChain", new DefaultLogger());
@@ -38,12 +26,15 @@ public class BlockChain {
     public final FileManager fileManager = new FileManager();
 
     public BlockChain(int difficulty, float minimumTransaction) {
+        load();
+
         Security.addProvider(new BouncyCastleProvider());
         BlockChain.difficulty = difficulty;
         BlockChain.minimumTransaction = minimumTransaction;
 
-//        wallets.add(new Wallet("danylo.komisarenko", "oNAxLmav", 710, 14, DataStructureAdapter.arrayToList("Admin")));
-//        wallets.add(new Wallet("banker", "dfshbfh", 0, 0, DataStructureAdapter.arrayToList("Banker")));
+        if (getWallet("banker") != null) {
+            createWallet("banker", Wallet.createPin(10), 0, 0, "Banker");
+        }
 
         new ShutdownOperation(new ThreadMethodRunner(() -> save()), "Save", logger);
     }
@@ -70,6 +61,10 @@ public class BlockChain {
         return null;
     }
 
+    public static void createWallet(String username, String pin, int homeroom, int studentNumber, String... jobs) {
+        wallets.add(new Wallet(username, pin, homeroom, studentNumber, DataStructureAdapter.arrayToList(jobs)));
+    }
+
     public void addBlock(Block b) {
         blockchain.add(b);
         if (!isChainValid()) {
@@ -77,12 +72,24 @@ public class BlockChain {
         }
     }
 
-    public void sendFunds() {
-
+    public void sendFunds(Wallet sender, Wallet recipient, Coin... coins) {
+        if (hasGenesis()) {
+            createBlock(blockchain.get(blockchain.size() - 1).hash, sender, recipient, coins);
+        } else {
+            createBlock("0", sender, recipient, coins);
+        }
     }
 
-    public void createGenesisBlock(Wallet sender, Wallet recipient, Coin... coins) {
+    public void createBlock(String hash, Wallet sender, Wallet recipient, Coin... coins) {
+        Block b = new Block(hash, sender.publicKey, recipient.publicKey, DataStructureAdapter.arrayToList(coins));
+        addBlock(b);
+    }
 
+    public boolean hasGenesis() {
+        for (Block b : blockchain) {
+            if (b.hash.equals("0")) return true;
+        }
+        return false;
     }
 
     public boolean isChainValid() {
