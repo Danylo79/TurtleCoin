@@ -4,16 +4,18 @@ import dev.dankom.cc.chain.block.Block;
 import dev.dankom.cc.chain.coin.Coin;
 import dev.dankom.cc.chain.wallet.Wallet;
 import dev.dankom.cc.file.FileManager;
+import dev.dankom.cc.util.CoinUtil;
+import dev.dankom.cc.util.HexUtil;
 import dev.dankom.cc.util.JSONUtil;
 import dev.dankom.file.json.JsonFile;
 import dev.dankom.file.json.JsonObjectBuilder;
+import dev.dankom.file.type.Directory;
 import dev.dankom.interfaces.impl.ThreadMethodRunner;
 import dev.dankom.logger.LogManager;
 import dev.dankom.logger.abztract.DefaultLogger;
 import dev.dankom.logger.interfaces.ILogger;
 import dev.dankom.operation.operations.ShutdownOperation;
 import dev.dankom.util.general.DataStructureAdapter;
-import dev.dankom.util.general.FileUtil;
 import org.apache.commons.io.FileUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.json.simple.JSONArray;
@@ -41,9 +43,10 @@ public class BlockChain {
         BlockChain.difficulty = difficulty;
         BlockChain.minimumTransaction = minimumTransaction;
 
-        if (getWallet("banker") != null) {
-            createWallet("banker", Wallet.createPin(10), 0, 0, "Banker");
-        }
+        createWallet("banker", Wallet.createPin(10), 0, 0, "Banker");
+        createWallet("danylo.komisarenko", Wallet.createPin(10), 710, 14, "Admin");
+
+        addFunds(getWallet("danylo.komisarenko"), CoinUtil.mineBlock(difficulty));
 
         new ShutdownOperation(new ThreadMethodRunner(() -> save()), "Save", logger);
     }
@@ -71,22 +74,33 @@ public class BlockChain {
     }
 
     public static void createWallet(String username, String pin, int homeroom, int studentNumber, String... jobs) {
-        wallets.add(new Wallet(username, pin, homeroom, studentNumber, DataStructureAdapter.arrayToList(jobs)));
-    }
-
-    public void addBlock(Block b) {
-        blockchain.add(b);
-        if (!isChainValid()) {
-            blockchain.remove(b);
+        if (getWallet(username) == null) {
+            wallets.add(new Wallet(username, pin, homeroom, studentNumber, DataStructureAdapter.arrayToList(jobs)));
         }
     }
 
     public void sendFunds(Wallet sender, Wallet recipient, Coin... coins) {
+        if (!sender.getUsername().equals("banker") && recipient.getBalance().containsAll(DataStructureAdapter.arrayToList(coins))) {
+            logger.error("BlockChain", "#Insufficient Funds");
+            return;
+        }
+
+        if (sender.getUsername().equals("banker")) {
+            logger.info("BlockChain", "Added " + coins.length + " coin(s) to " + HexUtil.hexFromBytes(recipient.publicKey.getEncoded()));
+        } else {
+            logger.info("BlockChain", "Sent " + coins.length + " coin(s) to " + HexUtil.hexFromBytes(recipient.publicKey.getEncoded()));
+        }
+
         if (hasGenesis()) {
             createBlock(blockchain.get(blockchain.size() - 1).hash, sender, recipient, coins);
         } else {
+            logger.info("BlockChain", "Created genesis transaction");
             createBlock("0", sender, recipient, coins);
         }
+    }
+
+    public void addFunds(Wallet w, Coin... coins) {
+        sendFunds(getWallet("banker"), w, coins);
     }
 
     public void createBlock(String hash, Wallet sender, Wallet recipient, Coin... coins) {
@@ -101,16 +115,29 @@ public class BlockChain {
         return false;
     }
 
+    public void addBlock(Block b) {
+        blockchain.add(b);
+        if (!isChainValid()) {
+            blockchain.remove(b);
+        }
+    }
+
     public boolean isChainValid() {
         return true;
     }
 
     public void load() {
-        for (Object o : (JSONArray) fileManager.blockchain.get().get("blockchain")) blockchain.add(JSONUtil.deserializeBlock((JSONObject) o));
-        for (Object o : (JSONArray) fileManager.blockchain.get().get("wallets")) wallets.add(JSONUtil.deserializeWallet((JSONObject) o));
+        JsonFile json = fileManager.database;
+        for (Object o : (JSONArray) json.get().get("blockchain")) blockchain.add(JSONUtil.deserializeBlock((JSONObject) o));
+        for (Object o : (JSONArray) json.get().get("wallets")) wallets.add(JSONUtil.deserializeWallet((JSONObject) o));
     }
 
     public void save() {
+        try {
+            FileUtils.forceDelete(new File(new Directory("./coin"), "database.json"));
+        } catch (IOException e) {
+        }
+
         JsonObjectBuilder builder = new JsonObjectBuilder();
         List<JSONObject> blockchain = new ArrayList<>();
         for (Block b : BlockChain.blockchain) {
@@ -123,11 +150,7 @@ public class BlockChain {
         }
         builder.addArray("wallets", wallets);
 
-        try {
-            FileUtils.forceDelete(new File(FileManager.ROOT, fileManager.blockchain.getName()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        new JsonFile(FileManager.ROOT, fileManager.blockchain.getName(), builder.build());
+        JSONObject json = builder.build();
+        new JsonFile(new Directory("./coin"), fileManager.database.getName().replace(".json", ""), json);
     }
 }

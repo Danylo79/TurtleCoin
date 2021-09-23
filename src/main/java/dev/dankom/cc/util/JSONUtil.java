@@ -13,7 +13,6 @@ public class JSONUtil {
         return new JsonObjectBuilder()
                 .addKeyValuePair("hash", b.hash)
                 .addKeyValuePair("previousHash", b.previousHash)
-                .addKeyValuePair("merkleRoot", b.merkleRoot)
                 .addKeyValuePair("timeStamp", b.timeStamp)
                 .addKeyValuePair("nonce", b.nonce)
                 .addKeyValuePair("sender", KeyUtil.toJson(b.sender))
@@ -26,7 +25,6 @@ public class JSONUtil {
         return new Block(
                 (String) jo.get("hash"),
                 (String) jo.get("previousHash"),
-                (String) jo.get("merkleRoot"),
                 (long) jo.get("timeStamp"),
                 ((Long) jo.get("nonce")).intValue(),
                 KeyUtil.fromJsonPublic((JSONObject) jo.get("sender")),

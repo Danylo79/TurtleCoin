@@ -12,7 +12,6 @@ import java.util.List;
 public class Block {
     public String hash;
     public String previousHash;
-    public String merkleRoot;
     public long timeStamp;
     public int nonce;
     public PublicKey sender;
@@ -29,10 +28,9 @@ public class Block {
         this.hash = calculateHash();
     }
 
-    public Block(String hash, String previousHash, String merkleRoot, long timeStamp, int nonce, PublicKey sender, PublicKey recipient, List<Coin> coins) {
+    public Block(String hash, String previousHash, long timeStamp, int nonce, PublicKey sender, PublicKey recipient, List<Coin> coins) {
         this.hash = hash;
         this.previousHash = previousHash;
-        this.merkleRoot = merkleRoot;
         this.timeStamp = timeStamp;
         this.nonce = nonce;
         this.sender = sender;
@@ -41,11 +39,10 @@ public class Block {
     }
 
     public String calculateHash() {
-        return StringUtil.applySha256(previousHash + timeStamp + nonce + merkleRoot);
+        return StringUtil.applySha256(previousHash + timeStamp + nonce);
     }
 
     public void mineBlock(int difficulty) {
-        merkleRoot = StringUtil.getMerkleRoot(DataStructureAdapter.arrayToList(""));
         String target = StringUtil.getDifficultyString(difficulty);
         while (!hash.substring(0, difficulty).equals(target)) {
             nonce++;
@@ -54,7 +51,7 @@ public class Block {
     }
 
     public boolean isValid() {
-        return hash != null && previousHash != null && merkleRoot != null && timeStamp != -1 && nonce != -1;
+        return hash != null && previousHash != null && timeStamp != -1 && nonce != -1;
     }
 
     public boolean isRecipient(PublicKey publicKey) {

@@ -1,0 +1,63 @@
+{
+  "blockchain": [
+    {
+      "timeStamp": 1632430964082,
+      "previousHash": "0",
+      "sender": {
+        "format": "X.509",
+        "algorithm": "ECDSA",
+        "encoded": "MEkwEwYHKoZIzj0CAQYIKoZIzj0DAQEDMgAEbk91uSHvjX1Q81QhfgYis02eh13M9ely4d4SlrxTrDqXzgwMk2B3MV\/H8hLT8W5e"
+      },
+      "coins": [
+        "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9"
+      ],
+      "recipient": {
+        "format": "X.509",
+        "algorithm": "ECDSA",
+        "encoded": "MEkwEwYHKoZIzj0CAQYIKoZIzj0DAQEDMgAEvB+22QRqVTPSbFbbpDHFfTMifhKqd2NmQYz6Lj2UZ6PH4ii83sArL5ddGrRkqCPD"
+      },
+      "nonce": 0,
+      "hash": "ee51490b6ba8877fa769286081229c77d6323c464a76e66bd4a7973fe61e11de"
+    }
+  ],
+  "wallets": [
+    {
+      "private": {
+        "format": "PKCS#8",
+        "algorithm": "ECDSA",
+        "encoded": "MHsCAQAwEwYHKoZIzj0CAQYIKoZIzj0DAQEEYTBfAgEBBBgU0uulKldMGfHxfsOs1pCobafJ5E\/Yd9GgCgYIKoZIzj0DAQGhNAMyAARuT3W5Ie+NfVDzVCF+BiKzTZ6HXcz16XLh3hKWvFOsOpfODAyTYHcxX8fyEtPxbl4="
+      },
+      "public": {
+        "format": "X.509",
+        "algorithm": "ECDSA",
+        "encoded": "MEkwEwYHKoZIzj0CAQYIKoZIzj0DAQEDMgAEbk91uSHvjX1Q81QhfgYis02eh13M9ely4d4SlrxTrDqXzgwMk2B3MV\/H8hLT8W5e"
+      },
+      "pin": "tmyrvewbvkt",
+      "studentNumber": 0,
+      "jobs": [
+        "Banker"
+      ],
+      "homeroom": 0,
+      "username": "banker"
+    },
+    {
+      "private": {
+        "format": "PKCS#8",
+        "algorithm": "ECDSA",
+        "encoded": "MHsCAQAwEwYHKoZIzj0CAQYIKoZIzj0DAQEEYTBfAgEBBBguRaX42NUw5nKK6SFqLBmhEzvAKIkyxbugCgYIKoZIzj0DAQGhNAMyAAS8H7bZBGpVM9JsVtukMcV9MyJ+Eqp3Y2ZBjPouPZRno8fiKLzewCsvl10atGSoI8M="
+      },
+      "public": {
+        "format": "X.509",
+        "algorithm": "ECDSA",
+        "encoded": "MEkwEwYHKoZIzj0CAQYIKoZIzj0DAQEDMgAEvB+22QRqVTPSbFbbpDHFfTMifhKqd2NmQYz6Lj2UZ6PH4ii83sArL5ddGrRkqCPD"
+      },
+      "pin": "fbawslahrhj",
+      "studentNumber": 14,
+      "jobs": [
+        "Admin"
+      ],
+      "homeroom": 710,
+      "username": "danylo.komisarenko"
+    }
+  ]
+}
