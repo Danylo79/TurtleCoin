@@ -4,14 +4,23 @@ import dev.dankom.cc.chain.block.Block;
 import dev.dankom.cc.chain.coin.Coin;
 import dev.dankom.cc.chain.wallet.Wallet;
 import dev.dankom.cc.file.FileManager;
+import dev.dankom.cc.util.JSONUtil;
+import dev.dankom.file.json.JsonFile;
+import dev.dankom.file.json.JsonObjectBuilder;
 import dev.dankom.interfaces.impl.ThreadMethodRunner;
 import dev.dankom.logger.LogManager;
 import dev.dankom.logger.abztract.DefaultLogger;
 import dev.dankom.logger.interfaces.ILogger;
 import dev.dankom.operation.operations.ShutdownOperation;
 import dev.dankom.util.general.DataStructureAdapter;
+import dev.dankom.util.general.FileUtil;
+import org.apache.commons.io.FileUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
+import java.io.File;
+import java.io.IOException;
 import java.security.PublicKey;
 import java.security.Security;
 import java.util.ArrayList;
@@ -97,10 +106,28 @@ public class BlockChain {
     }
 
     public void load() {
-
+        for (Object o : (JSONArray) fileManager.blockchain.get().get("blockchain")) blockchain.add(JSONUtil.deserializeBlock((JSONObject) o));
+        for (Object o : (JSONArray) fileManager.blockchain.get().get("wallets")) wallets.add(JSONUtil.deserializeWallet((JSONObject) o));
     }
 
     public void save() {
+        JsonObjectBuilder builder = new JsonObjectBuilder();
+        List<JSONObject> blockchain = new ArrayList<>();
+        for (Block b : BlockChain.blockchain) {
+            blockchain.add(JSONUtil.buildBlock(b));
+        }
+        builder.addArray("blockchain", blockchain);
+        List<JSONObject> wallets = new ArrayList<>();
+        for (Wallet w : BlockChain.wallets) {
+            wallets.add(JSONUtil.buildWallet(w));
+        }
+        builder.addArray("wallets", wallets);
 
+        try {
+            FileUtils.forceDelete(new File(FileManager.ROOT, fileManager.blockchain.getName()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        new JsonFile(FileManager.ROOT, fileManager.blockchain.getName(), builder.build());
     }
 }
