@@ -77,6 +77,14 @@ public class BlockChain {
         }
     }
 
+    public void sendFunds() {
+
+    }
+
+    public void createGenesisBlock(Wallet sender, Wallet recipient, Coin... coins) {
+
+    }
+
     public boolean isChainValid() {
         return true;
     }

@@ -52,17 +52,15 @@ public class Wallet {
         }
     }
 
-    public void sendFunds() {
-
-    }
-
     public List<Coin> getBalance() {
         List<Coin> coins = new ArrayList<>();
         for (Block b : BlockChain.blockchain) {
-            if (b.isRecipient(publicKey)) {
-                coins.add(b.coin);
-            } else if (b.isSender(publicKey)) {
-                coins.remove(b.coin);
+            for (Coin c : b.coins) {
+                if (b.isRecipient(publicKey)) {
+                    coins.add(c);
+                } else if (b.isSender(publicKey)) {
+                    coins.remove(c);
+                }
             }
         }
         return coins;
