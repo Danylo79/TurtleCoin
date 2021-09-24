@@ -22,11 +22,16 @@ public class CoinUtil {
         return out;
     }
 
-    public static Coin mineBlock(int difficulty) {
-        Coin c = new Coin();
-        while (!c.isValid()) {
-            c.mineBlock(difficulty);
+    public static List<Coin> mineCoin(int difficulty, int amt) {
+        List<Coin> coins = new ArrayList<>();
+        for (int i = 0; i < amt; i++) {
+            Coin c = new Coin();
+            c.mine(difficulty);
+            while (toHashes(coins).contains(c.getHash())) {
+                c.mine(difficulty);
+            }
+            coins.add(c);
         }
-        return c;
+        return coins;
     }
 }

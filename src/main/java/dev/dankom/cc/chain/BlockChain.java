@@ -4,6 +4,7 @@ import dev.dankom.cc.chain.block.Block;
 import dev.dankom.cc.chain.coin.Coin;
 import dev.dankom.cc.chain.wallet.Wallet;
 import dev.dankom.cc.file.FileManager;
+import dev.dankom.cc.util.CoinUtil;
 import dev.dankom.cc.util.EncodingUtil;
 import dev.dankom.cc.util.JSONUtil;
 import dev.dankom.file.json.JsonFile;
@@ -36,7 +37,7 @@ public class BlockChain {
     public final FileManager fileManager = new FileManager();
 
     public BlockChain(int difficulty, float minimumTransaction) {
-        load();
+//        load();
 
         Security.addProvider(new BouncyCastleProvider());
         BlockChain.difficulty = difficulty;
@@ -44,6 +45,9 @@ public class BlockChain {
 
         createWallet("banker", Wallet.createPin(10), 0, 0, "Banker");
         createWallet("danylo.komisarenko", Wallet.createPin(10), 710, 14, "Admin");
+
+        Coin[] coins = CoinUtil.mineCoin(difficulty, 5).toArray(new Coin[]{});
+        addFunds(getWallet("danylo.komisarenko"), coins);
 
         new ShutdownOperation(new ThreadMethodRunner(() -> save()), "Save", logger);
     }
