@@ -4,8 +4,7 @@ import dev.dankom.cc.chain.block.Block;
 import dev.dankom.cc.chain.coin.Coin;
 import dev.dankom.cc.chain.wallet.Wallet;
 import dev.dankom.cc.file.FileManager;
-import dev.dankom.cc.util.CoinUtil;
-import dev.dankom.cc.util.HexUtil;
+import dev.dankom.cc.util.EncodingUtil;
 import dev.dankom.cc.util.JSONUtil;
 import dev.dankom.file.json.JsonFile;
 import dev.dankom.file.json.JsonObjectBuilder;
@@ -46,8 +45,6 @@ public class BlockChain {
         createWallet("banker", Wallet.createPin(10), 0, 0, "Banker");
         createWallet("danylo.komisarenko", Wallet.createPin(10), 710, 14, "Admin");
 
-        addFunds(getWallet("danylo.komisarenko"), CoinUtil.mineBlock(difficulty));
-
         new ShutdownOperation(new ThreadMethodRunner(() -> save()), "Save", logger);
     }
 
@@ -58,9 +55,9 @@ public class BlockChain {
         return null;
     }
 
-    public static Wallet getWallet(String username, String pin, int roomNumber, int studentNumber) {
+    public static Wallet getWallet(String username, int roomNumber, int studentNumber) {
         for (Wallet w : wallets) {
-            if (w.getUsername().equalsIgnoreCase(username) && w.getPin().equalsIgnoreCase(pin) && w.getHomeroom() == roomNumber && w.getStudentNumber() == studentNumber)
+            if (w.getUsername().equalsIgnoreCase(username) && w.getHomeroom() == roomNumber && w.getStudentNumber() == studentNumber)
                 return w;
         }
         return null;
@@ -68,7 +65,7 @@ public class BlockChain {
 
     public static Wallet getWallet(PublicKey key) {
         for (Wallet w : wallets) {
-            if (w.publicKey == key) return w;
+            if (EncodingUtil.hexFromBytes(w.publicKey.getEncoded()).equals(EncodingUtil.hexFromBytes(key.getEncoded()))) return w;
         }
         return null;
     }
@@ -79,16 +76,16 @@ public class BlockChain {
         }
     }
 
-    public void sendFunds(Wallet sender, Wallet recipient, Coin... coins) {
+    public static void sendFunds(Wallet sender, Wallet recipient, Coin... coins) {
         if (!sender.getUsername().equals("banker") && recipient.getBalance().containsAll(DataStructureAdapter.arrayToList(coins))) {
             logger.error("BlockChain", "#Insufficient Funds");
             return;
         }
 
         if (sender.getUsername().equals("banker")) {
-            logger.info("BlockChain", "Added " + coins.length + " coin(s) to " + HexUtil.hexFromBytes(recipient.publicKey.getEncoded()));
+            logger.info("BlockChain", "Added " + coins.length + " coin(s) to " + EncodingUtil.hexFromBytes(recipient.publicKey.getEncoded()));
         } else {
-            logger.info("BlockChain", "Sent " + coins.length + " coin(s) to " + HexUtil.hexFromBytes(recipient.publicKey.getEncoded()));
+            logger.info("BlockChain", "Sent " + coins.length + " coin(s) to " + EncodingUtil.hexFromBytes(recipient.publicKey.getEncoded()));
         }
 
         if (hasGenesis()) {
@@ -99,30 +96,37 @@ public class BlockChain {
         }
     }
 
-    public void addFunds(Wallet w, Coin... coins) {
+    public static void addFunds(Wallet w, Coin... coins) {
+        for (Block b : blockchain) {
+            if (b.isSender(getWallet("banker").publicKey)) {
+                for (Coin c : coins) {
+                    if (b.coins.contains(c)) return;
+                }
+            }
+        }
         sendFunds(getWallet("banker"), w, coins);
     }
 
-    public void createBlock(String hash, Wallet sender, Wallet recipient, Coin... coins) {
+    public static void createBlock(String hash, Wallet sender, Wallet recipient, Coin... coins) {
         Block b = new Block(hash, sender.publicKey, recipient.publicKey, DataStructureAdapter.arrayToList(coins));
         addBlock(b);
     }
 
-    public boolean hasGenesis() {
+    public static boolean hasGenesis() {
         for (Block b : blockchain) {
             if (b.hash.equals("0")) return true;
         }
         return false;
     }
 
-    public void addBlock(Block b) {
+    public static void addBlock(Block b) {
         blockchain.add(b);
         if (!isChainValid()) {
             blockchain.remove(b);
         }
     }
 
-    public boolean isChainValid() {
+    public static boolean isChainValid() {
         return true;
     }
 

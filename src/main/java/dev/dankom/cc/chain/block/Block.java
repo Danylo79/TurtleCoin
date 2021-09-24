@@ -1,9 +1,8 @@
 package dev.dankom.cc.chain.block;
 
 import dev.dankom.cc.chain.coin.Coin;
-import dev.dankom.cc.util.HexUtil;
+import dev.dankom.cc.util.EncodingUtil;
 import dev.dankom.cc.util.StringUtil;
-import dev.dankom.util.general.DataStructureAdapter;
 
 import java.security.PublicKey;
 import java.util.Date;
@@ -55,10 +54,10 @@ public class Block {
     }
 
     public boolean isRecipient(PublicKey publicKey) {
-        return HexUtil.hexFromBytes(publicKey.getEncoded()).equals(HexUtil.hexFromBytes(recipient.getEncoded()));
+        return EncodingUtil.hexFromBytes(publicKey.getEncoded()).equals(EncodingUtil.hexFromBytes(recipient.getEncoded()));
     }
 
     public boolean isSender(PublicKey publicKey) {
-        return HexUtil.hexFromBytes(publicKey.getEncoded()).equals(HexUtil.hexFromBytes(sender.getEncoded()));
+        return EncodingUtil.hexFromBytes(publicKey.getEncoded()).equals(EncodingUtil.hexFromBytes(sender.getEncoded()));
     }
 }

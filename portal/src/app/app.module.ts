@@ -16,6 +16,8 @@ import {MatOptionModule} from "@angular/material/core";
 import {MatDialog, MatDialogModule} from "@angular/material/dialog";
 import {MatInputModule} from "@angular/material/input";
 import {FormsModule} from "@angular/forms";
+import {WalletService} from "./services/wallet.service";
+import {ConfigService} from "./services/config.service";
 
 @NgModule({
   declarations: [
@@ -38,7 +40,10 @@ import {FormsModule} from "@angular/forms";
     MatInputModule,
     FormsModule
   ],
-  providers: [],
+  providers: [
+    ConfigService,
+    WalletService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -738,7 +738,7 @@ textarea.cdk-textarea-autosize-measuring-firefox {
 }
 
 .mat-primary .mat-option.mat-selected:not(.mat-option-disabled) {
-  color: #7b1fa2
+  color: #4da21f
 }
 
 .mat-accent .mat-option.mat-selected:not(.mat-option-disabled) {
@@ -770,7 +770,7 @@ textarea.cdk-textarea-autosize-measuring-firefox {
 }
 
 .mat-primary .mat-pseudo-checkbox-checked, .mat-primary .mat-pseudo-checkbox-indeterminate {
-  background: #7b1fa2
+  background: #4da21f
 }
 
 .mat-pseudo-checkbox-checked, .mat-pseudo-checkbox-indeterminate, .mat-accent .mat-pseudo-checkbox-checked, .mat-accent .mat-pseudo-checkbox-indeterminate {
@@ -1092,7 +1092,7 @@ textarea.cdk-textarea-autosize-measuring-firefox {
 
 .mat-badge-content {
   color: #fff;
-  background: #7b1fa2
+  background: #4da21f
 }
 
 .cdk-high-contrast-active .mat-badge-content {
@@ -1127,7 +1127,7 @@ textarea.cdk-textarea-autosize-measuring-firefox {
 }
 
 .mat-button.mat-primary, .mat-icon-button.mat-primary, .mat-stroked-button.mat-primary {
-  color: #7b1fa2
+  color: #4da21f
 }
 
 .mat-button.mat-accent, .mat-icon-button.mat-accent, .mat-stroked-button.mat-accent {
@@ -1143,7 +1143,7 @@ textarea.cdk-textarea-autosize-measuring-firefox {
 }
 
 .mat-button.mat-primary .mat-button-focus-overlay, .mat-icon-button.mat-primary .mat-button-focus-overlay, .mat-stroked-button.mat-primary .mat-button-focus-overlay {
-  background-color: #7b1fa2
+  background-color: #4da21f
 }
 
 .mat-button.mat-accent .mat-button-focus-overlay, .mat-icon-button.mat-accent .mat-button-focus-overlay, .mat-stroked-button.mat-accent .mat-button-focus-overlay {
@@ -1193,7 +1193,7 @@ textarea.cdk-textarea-autosize-measuring-firefox {
 }
 
 .mat-flat-button.mat-primary, .mat-raised-button.mat-primary, .mat-fab.mat-primary, .mat-mini-fab.mat-primary {
-  background-color: #7b1fa2
+  background-color: #4da21f
 }
 
 .mat-flat-button.mat-accent, .mat-raised-button.mat-accent, .mat-fab.mat-accent, .mat-mini-fab.mat-accent {
@@ -1352,7 +1352,7 @@ textarea.cdk-textarea-autosize-measuring-firefox {
 }
 
 .mat-checkbox-indeterminate.mat-primary .mat-checkbox-background, .mat-checkbox-checked.mat-primary .mat-checkbox-background {
-  background-color: #7b1fa2
+  background-color: #4da21f
 }
 
 .mat-checkbox-indeterminate.mat-accent .mat-checkbox-background, .mat-checkbox-checked.mat-accent .mat-checkbox-background {
@@ -1380,7 +1380,7 @@ textarea.cdk-textarea-autosize-measuring-firefox {
 }
 
 .mat-checkbox-checked:not(.mat-checkbox-disabled).mat-primary .mat-ripple-element, .mat-checkbox:active:not(.mat-checkbox-disabled).mat-primary .mat-ripple-element {
-  background: #7b1fa2
+  background: #4da21f
 }
 
 .mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element, .mat-checkbox:active:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element {
@@ -1418,7 +1418,7 @@ textarea.cdk-textarea-autosize-measuring-firefox {
 }
 
 .mat-chip.mat-standard-chip.mat-chip-selected.mat-primary {
-  background-color: #7b1fa2;
+  background-color: #4da21f;
   color: #fff
 }
 
@@ -1545,11 +1545,11 @@ mat-row, mat-header-row, mat-footer-row, th.mat-header-cell, td.mat-cell, td.mat
 }
 
 .mat-calendar-body-comparison-identical.mat-calendar-body-selected, .mat-calendar-body-in-comparison-range > .mat-calendar-body-selected {
-  background: #46a35e
+  background: #57ff00
 }
 
 .mat-calendar-body-selected {
-  background-color: #7b1fa2;
+  background-color: #57ff00;
   color: #fff
 }
 
@@ -1592,7 +1592,7 @@ mat-row, mat-header-row, mat-footer-row, th.mat-header-cell, td.mat-cell, td.mat
 }
 
 .mat-datepicker-content.mat-accent .mat-calendar-body-comparison-identical.mat-calendar-body-selected, .mat-datepicker-content.mat-accent .mat-calendar-body-in-comparison-range > .mat-calendar-body-selected {
-  background: #46a35e
+  background: #57ff00
 }
 
 .mat-datepicker-content.mat-accent .mat-calendar-body-selected {
@@ -1633,7 +1633,7 @@ mat-row, mat-header-row, mat-footer-row, th.mat-header-cell, td.mat-cell, td.mat
 }
 
 .mat-datepicker-content.mat-warn .mat-calendar-body-comparison-identical.mat-calendar-body-selected, .mat-datepicker-content.mat-warn .mat-calendar-body-in-comparison-range > .mat-calendar-body-selected {
-  background: #46a35e
+  background: #57ff00
 }
 
 .mat-datepicker-content.mat-warn .mat-calendar-body-selected {
@@ -1658,7 +1658,7 @@ mat-row, mat-header-row, mat-footer-row, th.mat-header-cell, td.mat-cell, td.mat
 }
 
 .mat-datepicker-toggle-active {
-  color: #7b1fa2
+  color: #4da21f
 }
 
 .mat-datepicker-toggle-active.mat-accent {
@@ -1743,7 +1743,7 @@ mat-row, mat-header-row, mat-footer-row, th.mat-header-cell, td.mat-cell, td.mat
 }
 
 .mat-form-field.mat-focused .mat-form-field-label {
-  color: #7b1fa2
+  color: #4da21f
 }
 
 .mat-form-field.mat-focused .mat-form-field-label.mat-accent {
@@ -1763,7 +1763,7 @@ mat-row, mat-header-row, mat-footer-row, th.mat-header-cell, td.mat-cell, td.mat
 }
 
 .mat-form-field.mat-focused .mat-form-field-ripple {
-  background-color: #7b1fa2
+  background-color: #4da21f
 }
 
 .mat-form-field.mat-focused .mat-form-field-ripple.mat-accent {
@@ -1775,7 +1775,7 @@ mat-row, mat-header-row, mat-footer-row, th.mat-header-cell, td.mat-cell, td.mat
 }
 
 .mat-form-field-type-mat-native-select.mat-focused:not(.mat-form-field-invalid) .mat-form-field-infix::after {
-  color: #7b1fa2
+  color: #4da21f
 }
 
 .mat-form-field-type-mat-native-select.mat-focused:not(.mat-form-field-invalid).mat-accent .mat-form-field-infix::after {
@@ -1859,7 +1859,7 @@ mat-row, mat-header-row, mat-footer-row, th.mat-header-cell, td.mat-cell, td.mat
 }
 
 .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
-  color: #7b1fa2
+  color: #4da21f
 }
 
 .mat-form-field-appearance-outline.mat-focused.mat-accent .mat-form-field-outline-thick {
@@ -1883,7 +1883,7 @@ mat-row, mat-header-row, mat-footer-row, th.mat-header-cell, td.mat-cell, td.mat
 }
 
 .mat-icon.mat-primary {
-  color: #7b1fa2
+  color: #4da21f
 }
 
 .mat-icon.mat-accent {
@@ -1903,7 +1903,7 @@ mat-row, mat-header-row, mat-footer-row, th.mat-header-cell, td.mat-cell, td.mat
 }
 
 .mat-input-element {
-  caret-color: #7b1fa2
+  caret-color: #4da21f
 }
 
 .mat-input-element::placeholder {
@@ -2025,7 +2025,7 @@ mat-row, mat-header-row, mat-footer-row, th.mat-header-cell, td.mat-cell, td.mat
 }
 
 .mat-progress-bar-fill::after {
-  background-color: #7b1fa2
+  background-color: #4da21f
 }
 
 .mat-progress-bar.mat-accent .mat-progress-bar-background {
@@ -2053,7 +2053,7 @@ mat-row, mat-header-row, mat-footer-row, th.mat-header-cell, td.mat-cell, td.mat
 }
 
 .mat-progress-spinner circle, .mat-spinner circle {
-  stroke: #7b1fa2
+  stroke: #4da21f
 }
 
 .mat-progress-spinner.mat-accent circle, .mat-spinner.mat-accent circle {
@@ -2069,11 +2069,11 @@ mat-row, mat-header-row, mat-footer-row, th.mat-header-cell, td.mat-cell, td.mat
 }
 
 .mat-radio-button.mat-primary.mat-radio-checked .mat-radio-outer-circle {
-  border-color: #7b1fa2
+  border-color: #4da21f
 }
 
 .mat-radio-button.mat-primary .mat-radio-inner-circle, .mat-radio-button.mat-primary .mat-radio-ripple .mat-ripple-element:not(.mat-radio-persistent-ripple), .mat-radio-button.mat-primary.mat-radio-checked .mat-radio-persistent-ripple, .mat-radio-button.mat-primary:active .mat-radio-persistent-ripple {
-  background-color: #7b1fa2
+  background-color: #4da21f
 }
 
 .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
@@ -2137,7 +2137,7 @@ mat-row, mat-header-row, mat-footer-row, th.mat-header-cell, td.mat-cell, td.mat
 }
 
 .mat-form-field.mat-focused.mat-primary .mat-select-arrow {
-  color: #7b1fa2
+  color: #4da21f
 }
 
 .mat-form-field.mat-focused.mat-accent .mat-select-arrow {
@@ -2210,7 +2210,7 @@ mat-row, mat-header-row, mat-footer-row, th.mat-header-cell, td.mat-cell, td.mat
 }
 
 .mat-slide-toggle.mat-primary.mat-checked .mat-slide-toggle-thumb {
-  background-color: #7b1fa2
+  background-color: #4da21f
 }
 
 .mat-slide-toggle.mat-primary.mat-checked .mat-slide-toggle-bar {
@@ -2218,7 +2218,7 @@ mat-row, mat-header-row, mat-footer-row, th.mat-header-cell, td.mat-cell, td.mat
 }
 
 .mat-slide-toggle.mat-primary.mat-checked .mat-ripple-element {
-  background-color: #7b1fa2
+  background-color: #4da21f
 }
 
 .mat-slide-toggle.mat-warn.mat-checked .mat-slide-toggle-thumb {
@@ -2251,7 +2251,7 @@ mat-row, mat-header-row, mat-footer-row, th.mat-header-cell, td.mat-cell, td.mat
 }
 
 .mat-primary .mat-slider-track-fill, .mat-primary .mat-slider-thumb, .mat-primary .mat-slider-thumb-label {
-  background-color: #7b1fa2
+  background-color: #4da21f
 }
 
 .mat-primary .mat-slider-thumb-label-text {
@@ -2360,7 +2360,7 @@ mat-row, mat-header-row, mat-footer-row, th.mat-header-cell, td.mat-cell, td.mat
 }
 
 .mat-step-header .mat-step-icon-selected, .mat-step-header .mat-step-icon-state-done, .mat-step-header .mat-step-icon-state-edit {
-  background-color: #7b1fa2;
+  background-color: #4da21f;
   color: #fff
 }
 
@@ -2467,7 +2467,7 @@ mat-row, mat-header-row, mat-footer-row, th.mat-header-cell, td.mat-cell, td.mat
 }
 
 .mat-tab-group.mat-primary .mat-ink-bar, .mat-tab-nav-bar.mat-primary .mat-ink-bar {
-  background-color: #7b1fa2
+  background-color: #4da21f
 }
 
 .mat-tab-group.mat-primary.mat-background-primary > .mat-tab-header .mat-ink-bar, .mat-tab-group.mat-primary.mat-background-primary > .mat-tab-link-container .mat-ink-bar, .mat-tab-nav-bar.mat-primary.mat-background-primary > .mat-tab-header .mat-ink-bar, .mat-tab-nav-bar.mat-primary.mat-background-primary > .mat-tab-link-container .mat-ink-bar {
@@ -2503,7 +2503,7 @@ mat-row, mat-header-row, mat-footer-row, th.mat-header-cell, td.mat-cell, td.mat
 }
 
 .mat-tab-group.mat-background-primary > .mat-tab-header, .mat-tab-group.mat-background-primary > .mat-tab-link-container, .mat-tab-group.mat-background-primary > .mat-tab-header-pagination, .mat-tab-nav-bar.mat-background-primary > .mat-tab-header, .mat-tab-nav-bar.mat-background-primary > .mat-tab-link-container, .mat-tab-nav-bar.mat-background-primary > .mat-tab-header-pagination {
-  background-color: #7b1fa2
+  background-color: #4da21f
 }
 
 .mat-tab-group.mat-background-primary > .mat-tab-header .mat-tab-label, .mat-tab-group.mat-background-primary > .mat-tab-link-container .mat-tab-link, .mat-tab-nav-bar.mat-background-primary > .mat-tab-header .mat-tab-label, .mat-tab-nav-bar.mat-background-primary > .mat-tab-link-container .mat-tab-link {
@@ -2588,7 +2588,7 @@ mat-row, mat-header-row, mat-footer-row, th.mat-header-cell, td.mat-cell, td.mat
 }
 
 .mat-toolbar.mat-primary {
-  background: #7b1fa2;
+  background: #4da21f;
   color: #fff
 }
 

@@ -8,8 +8,8 @@ import java.security.Key;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
-import static dev.dankom.cc.util.HexUtil.hexToBytes;
-import static dev.dankom.cc.util.HexUtil.hexFromBytes;
+import static dev.dankom.cc.util.EncodingUtil.hexToBytes;
+import static dev.dankom.cc.util.EncodingUtil.hexFromBytes;
 
 public class KeyUtil {
     public static JSONObject toJson(Key key) {

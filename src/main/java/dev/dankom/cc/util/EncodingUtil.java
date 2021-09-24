@@ -2,7 +2,7 @@ package dev.dankom.cc.util;
 
 import java.util.Base64;
 
-public class HexUtil {
+public class EncodingUtil {
     public static String hexFromBytes(byte[] bytes) {
         return Base64.getEncoder().encodeToString(bytes);
     }

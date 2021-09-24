@@ -14,20 +14,30 @@
 
 <mat-grid-list cols="2" rowHeight="2:1" class="working-area" gutterSize="20">
   <mat-grid-tile>
-
+    <div class="list" *ngIf="wallet.username.length > 0">
+      <mat-card class="list-item" *ngFor="let inbound of wallet.inbound">
+        <span>{{inbound.sender}}</span>
+        <span class="spacer-auto"></span>
+        <span>{{inbound.coins}}</span>
+      </mat-card>
+    </div>
   </mat-grid-tile>
 
   <mat-grid-tile rowspan="2">
-    <div class="coin-list">
-      <mat-card class="coin-list-item" *ngFor="let coin of coins">
-        <span>{{coin.hash}}</span>
-        <span class="spacer-auto"></span>
-        <mat-icon color="{{coin.status.color}}">{{coin.status.icon}}</mat-icon>
+    <div class="list" *ngIf="wallet.username.length > 0">
+      <mat-card class="list-item" *ngFor="let coin of wallet.coins">
+        <span>{{coin}}</span>
       </mat-card>
     </div>
   </mat-grid-tile>
 
   <mat-grid-tile>
-
+    <div class="list" *ngIf="wallet.username.length > 0">
+      <mat-card class="list-item" *ngFor="let outbound of wallet.outbound">
+        <span>{{outbound.recipient}}</span>
+        <span class="spacer-auto"></span>
+        <span>{{outbound.coins}}</span>
+      </mat-card>
+    </div>
   </mat-grid-tile>
 </mat-grid-list>
