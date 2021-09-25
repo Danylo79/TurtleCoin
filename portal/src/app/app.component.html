@@ -1,16 +1,4 @@
-<mat-toolbar color="primary">
-  <button mat-icon-button aria-label="Example icon-button with menu icon">
-    <mat-icon>menu</mat-icon>
-  </button>
-  <span>Turtle Coin</span>
-  <span class="spacer-auto"></span>
-  <button mat-icon-button aria-label="Coin icon">
-    <mat-icon>monetization_on</mat-icon>
-  </button>
-  <button mat-icon-button aria-label="Dashboard Icon">
-    <mat-icon>space_dashboard</mat-icon>
-  </button>
-</mat-toolbar>
+<app-toolbar></app-toolbar>
 
 <mat-grid-list cols="2" rowHeight="2:1" class="working-area" gutterSize="20">
   <mat-grid-tile>
@@ -24,11 +12,15 @@
   </mat-grid-tile>
 
   <mat-grid-tile rowspan="2">
-    <div class="list" *ngIf="wallet.username.length > 0">
-      <mat-card class="list-item" *ngFor="let coin of wallet.coins">
-        <span>{{coin}}</span>
-      </mat-card>
-    </div>
+      <div class="list">
+        <mat-card class="top-list-item">
+          <span>Send Coins</span>
+          <span class="spacer-auto"></span>
+          <button mat-icon-button aria-label="Send Icon" (click)="openSendDialog()">
+            <mat-icon>send</mat-icon>
+          </button>
+        </mat-card>
+      </div>
   </mat-grid-tile>
 
   <mat-grid-tile>

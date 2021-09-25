@@ -30,3 +30,15 @@ mat-grid-tile {
   text-transform: uppercase;
   text-overflow: ellipsis;
 }
+
+.top-list-item {
+  display: flex;
+  color: #4da21f;
+  border: 2px solid #4da21f;
+  background: #b0dab5;
+  margin: 6px 5px;
+  box-shadow: none;
+  align-items: center;
+  font-size: 1.5em;
+  text-overflow: ellipsis;
+}

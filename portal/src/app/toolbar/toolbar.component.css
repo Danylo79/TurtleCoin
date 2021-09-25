@@ -1,0 +1,7 @@
+.spacer-auto {
+  flex: 1 1 auto;
+}
+
+.toolbar {
+  display: flex;
+}

@@ -37,7 +37,7 @@ public class BlockChain {
     public final FileManager fileManager = new FileManager();
 
     public BlockChain(int difficulty, float minimumTransaction) {
-//        load();
+        load();
 
         Security.addProvider(new BouncyCastleProvider());
         BlockChain.difficulty = difficulty;
@@ -45,9 +45,6 @@ public class BlockChain {
 
         createWallet("banker", Wallet.createPin(10), 0, 0, "Banker");
         createWallet("danylo.komisarenko", Wallet.createPin(10), 710, 14, "Admin");
-
-        Coin[] coins = CoinUtil.mineCoin(difficulty, 5).toArray(new Coin[]{});
-        addFunds(getWallet("danylo.komisarenko"), coins);
 
         new ShutdownOperation(new ThreadMethodRunner(() -> save()), "Save", logger);
     }

@@ -20,27 +20,24 @@ export class AppComponent implements OnInit {
   }
 
 
-  openDialog(): void {
+  openLoginDialog(): void {
     const dialogRef = this.dialog.open(LoginDialogComponent, {
       width: '250px',
       data: {},
       disableClose: true,
       hasBackdrop: false
     });
-
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-    });
   }
 
   ngOnInit(): void {
     let cookie = this.getCookie("turtle-cookie");
     if (cookie == "") {
-      this.openDialog();
+      this.openLoginDialog();
     } else {
       let split: string[] = cookie.split("-");
       this.walletService.getWallet(split[0], split[1], split[2]).then(wallet => {
         this.wallet = wallet;
+        console.log("Got " + wallet.username);
       });
     }
   }
@@ -58,5 +55,14 @@ export class AppComponent implements OnInit {
       }
     }
     return '';
+  }
+
+  openSendDialog() {
+    const dialogRef = this.dialog.open(LoginDialogComponent, {
+      width: '250px',
+      data: {},
+      disableClose: true,
+      hasBackdrop: false
+    });
   }
 }

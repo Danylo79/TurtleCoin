@@ -50,7 +50,8 @@ public class BlockChainRest {
     @PostMapping("/auth/login")
     public void login(String returnUrl, String username, String pin, String roomNumber, String studentNumber, HttpServletResponse response) {
         Wallet wallet = BlockChain.getWallet(username, Integer.parseInt(roomNumber), Integer.parseInt(studentNumber));
-        if (wallet.getPin().equals(pin)) {
+        System.out.println(wallet.getPin());
+        if (wallet.getPin().equalsIgnoreCase(pin)) {
             Cookie cookie = new Cookie("turtle-cookie", username + "-" + roomNumber + "-" + studentNumber);
             cookie.setPath("/");
             response.addCookie(cookie);
