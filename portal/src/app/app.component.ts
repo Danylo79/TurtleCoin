@@ -1,8 +1,9 @@
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {LoginDialogComponent} from './login/login-dialog.component';
 import {MatDialog} from "@angular/material/dialog";
 import {WalletService} from "./services/wallet.service";
 import {Wallet} from "./data/entity/wallet";
+import {SendDialogComponent} from "./send/send-dialog.component";
 
 @Component({
   selector: 'app-root',
@@ -25,6 +26,16 @@ export class AppComponent implements OnInit {
       width: '250px',
       data: {},
       disableClose: true,
+      hasBackdrop: false
+    });
+  }
+
+  openSendDialog() {
+    const dialogRef = this.dialog.open(SendDialogComponent, {
+      width: '250px',
+      data: {
+        wallet: this.wallet
+      },
       hasBackdrop: false
     });
   }
@@ -55,14 +66,5 @@ export class AppComponent implements OnInit {
       }
     }
     return '';
-  }
-
-  openSendDialog() {
-    const dialogRef = this.dialog.open(LoginDialogComponent, {
-      width: '250px',
-      data: {},
-      disableClose: true,
-      hasBackdrop: false
-    });
   }
 }

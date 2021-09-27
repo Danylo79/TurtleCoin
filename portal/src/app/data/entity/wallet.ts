@@ -1,5 +1,4 @@
-import {Inbound} from "./inbound";
-import {Outbound} from "./outbound";
+import {Transaction} from "./transaction";
 
 export class Wallet {
   public username: string = "";
@@ -8,8 +7,7 @@ export class Wallet {
   public studentNumber: number = -1;
   public jobs: string[] = [];
   public coins: string[] = [];
-  public inbound: Inbound[] = [];
-  public outbound: Outbound[] = [];
+  public ledger: Transaction[] = [];
 
   constructor(res?: any) {
     if (typeof res === "undefined") return;
@@ -21,12 +19,14 @@ export class Wallet {
     this.jobs = res.jobs;
     this.coins = res.coins;
 
-    for (let i: number = 0; i < res.inbound.length; i++) {
-      this.inbound.push(new Inbound(res.inbound[i].sender, res.inbound[i].coins));
-    }
-
-    for (let i: number = 0; i < res.outbound.length; i++) {
-      this.outbound.push(new Outbound(res.outbound[i].recipient, res.outbound[i].coins));
+    for (let i: number = 0; i < res.transactions.length; i++) {
+      const transaction = new Transaction();
+      let trn = res.transactions[i];
+      transaction.entity = trn.entity;
+      transaction.amount = trn.coins;
+      transaction.type = trn.type;
+      transaction.formattedTimeStamp = trn.formattedTimeStamp;
+      this.ledger.push(transaction);
     }
   }
 }

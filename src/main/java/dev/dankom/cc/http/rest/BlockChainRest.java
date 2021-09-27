@@ -39,8 +39,7 @@ public class BlockChainRest {
                     .addArray("coins", CoinUtil.toHashes(w.getBalance()))
                     .addKeyValuePair("public", KeyUtil.toJson(w.publicKey))
                     .addKeyValuePair("private", KeyUtil.toJson(w.privateKey))
-                    .addArray("inbound", BlockChainUtil.getInbounds(w))
-                    .addArray("outbound", BlockChainUtil.getOutbounds(w))
+                    .addArray("transactions", BlockChainUtil.getTransactions(w))
                     .build().toJSONString();
         } catch (NullPointerException e) {
             return "Failed: " + e.getMessage();
@@ -70,11 +69,11 @@ public class BlockChainRest {
     }
 
     @PostMapping("/transact")
-    public void transact(String returnUrl, String sender, String recipient, int amt, HttpServletResponse response) {
+    public void transact(String returnUrl, String sender, String recipient, String amount, HttpServletResponse response) {
         Wallet w = BlockChain.getWallet(sender);
-        if (w.getBalance().size() >= amt) {
+        if (w.getBalance().size() >= Integer.parseInt(amount)) {
             List<Coin> send = new ArrayList<>();
-            for (int i = 0; i <= amt; i++) {
+            for (int i = 0; i < Integer.parseInt(amount); i++) {
                 Coin c = w.getBalance().get(i);
                 send.add(c);
             }

@@ -26,11 +26,9 @@ public class CoinUtil {
         List<Coin> coins = new ArrayList<>();
         for (int i = 0; i < amt; i++) {
             Coin c = new Coin();
-            c.mine(difficulty);
-            while (toHashes(coins).contains(c.getHash())) {
-                c.mine(difficulty);
-            }
+            c.mine(difficulty, coins);
             coins.add(c);
+            System.out.println("Added: " + c.getHash());
         }
         return coins;
     }

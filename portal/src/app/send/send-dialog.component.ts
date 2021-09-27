@@ -1,4 +1,6 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
+import {MAT_DIALOG_DATA} from "@angular/material/dialog";
+import {Wallet} from "../data/entity/wallet";
 
 @Component({
   selector: 'app-login',
@@ -6,7 +8,7 @@ import {Component, OnInit} from '@angular/core';
   styleUrls: ['./login-dialog.component.css']
 })
 export class SendDialogComponent implements OnInit {
-  constructor() {}
+  constructor(@Inject(MAT_DIALOG_DATA) public data: {wallet: Wallet}) {}
 
   ngOnInit(): void {
 

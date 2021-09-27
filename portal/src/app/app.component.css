@@ -23,7 +23,7 @@ mat-grid-tile {
   color: #4da21f;
   border: 2px solid #4da21f;
   background: #b0dab5;
-  margin: 6px 5px;
+  margin: 5px;
   box-shadow: none;
   align-items: center;
   font-size: 1.5em;
@@ -41,4 +41,17 @@ mat-grid-tile {
   align-items: center;
   font-size: 1.5em;
   text-overflow: ellipsis;
+}
+
+.small-spacer {
+  margin-left: 5px;
+}
+
+.medium-spacer {
+  margin-left: 300px;
+}
+
+.amount {
+  min-width: 50px;
+  text-align: right;
 }

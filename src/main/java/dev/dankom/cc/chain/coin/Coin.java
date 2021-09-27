@@ -6,6 +6,7 @@ import dev.dankom.cc.util.CoinUtil;
 import dev.dankom.cc.util.StringUtil;
 
 import java.util.Date;
+import java.util.List;
 
 public class Coin {
     private String hash;
@@ -25,9 +26,9 @@ public class Coin {
         return StringUtil.applySha256(nonce.toString() + timestamp);
     }
 
-    public void mine(int difficulty) {
+    public void mine(int difficulty, List<Coin> madeHashes) {
         String target = StringUtil.getDifficultyString(difficulty);
-        while (!hash.substring(0, difficulty).equals(target) || !isValid()) {
+        while (!hash.substring(0, difficulty).equals(target) || !isValid() || CoinUtil.toHashes(madeHashes).contains(hash)) {
             nonce++;
             hash = calculateHash();
         }

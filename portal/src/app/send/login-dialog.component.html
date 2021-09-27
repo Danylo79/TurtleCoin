@@ -1,12 +1,17 @@
 <form ngNoForm method="POST" action="http://localhost:8080/transact">
   <input type="hidden" name="returnUrl" value="http://localhost:4200">
+  <input type="hidden" name="sender" value="{{data.wallet.username}}">
   <mat-card-content>
     <mat-form-field>
-      <mat-label>Username</mat-label>
-      <input required name="username" matInput>
+      <mat-label>To</mat-label>
+      <input required name="recipient" matInput>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Amount</mat-label>
+      <input type="number" required name="amount" matInput>
     </mat-form-field>
   </mat-card-content>
   <mat-card-actions class="field-actions">
-    <button class="submit-button" mat-raised-button type="submit" color="primary">Login</button>
+    <button class="submit-button" mat-raised-button type="submit" color="primary">Send</button>
   </mat-card-actions>
 </form>

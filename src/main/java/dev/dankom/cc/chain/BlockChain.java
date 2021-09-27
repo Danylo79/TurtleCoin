@@ -4,6 +4,7 @@ import dev.dankom.cc.chain.block.Block;
 import dev.dankom.cc.chain.coin.Coin;
 import dev.dankom.cc.chain.wallet.Wallet;
 import dev.dankom.cc.file.FileManager;
+import dev.dankom.cc.util.BlockChainUtil;
 import dev.dankom.cc.util.CoinUtil;
 import dev.dankom.cc.util.EncodingUtil;
 import dev.dankom.cc.util.JSONUtil;
@@ -45,6 +46,9 @@ public class BlockChain {
 
         createWallet("banker", Wallet.createPin(10), 0, 0, "Banker");
         createWallet("danylo.komisarenko", Wallet.createPin(10), 710, 14, "Admin");
+        createWallet("acacia.lee", Wallet.createPin(10), 710, 15);
+
+//        addFunds(getWallet("danylo.komisarenko"), CoinUtil.mineCoin(difficulty, 500).toArray(new Coin[]{}));
 
         new ShutdownOperation(new ThreadMethodRunner(() -> save()), "Save", logger);
     }
@@ -115,7 +119,7 @@ public class BlockChain {
 
     public static boolean hasGenesis() {
         for (Block b : blockchain) {
-            if (b.hash.equals("0")) return true;
+            if (b.previousHash.equalsIgnoreCase("0")) return true;
         }
         return false;
     }
