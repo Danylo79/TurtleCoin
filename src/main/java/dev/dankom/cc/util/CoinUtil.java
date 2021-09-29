@@ -21,4 +21,15 @@ public class CoinUtil {
         }
         return out;
     }
+
+    public static List<Coin> mineCoin(int difficulty, int amt) {
+        List<Coin> coins = new ArrayList<>();
+        for (int i = 0; i < amt; i++) {
+            Coin c = new Coin();
+            c.mine(difficulty, coins);
+            coins.add(c);
+            System.out.println("Added: " + c.getHash());
+        }
+        return coins;
+    }
 }

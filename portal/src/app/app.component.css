@@ -3,21 +3,55 @@
 }
 
 mat-grid-tile {
-  border: 5px solid mediumpurple;
+  border: 3px solid #4da21f;
 }
 
 .working-area {
   margin: 20px;
 }
 
-.coin-list {
+.list {
   display: flex;
   flex-direction: column;
   align-self: flex-start;
+  align-items: stretch;
+  width: 100%;
 }
 
-.coin-list-item {
-  color: mediumpurple;
-  border: 2px solid mediumpurple;
+.list-item {
+  display: flex;
+  color: #4da21f;
+  border: 2px solid #4da21f;
+  background: #b0dab5;
   margin: 5px;
+  box-shadow: none;
+  align-items: center;
+  font-size: 1.5em;
+  text-transform: uppercase;
+  text-overflow: ellipsis;
+}
+
+.top-list-item {
+  display: flex;
+  color: #4da21f;
+  border: 2px solid #4da21f;
+  background: #b0dab5;
+  margin: 6px 5px;
+  box-shadow: none;
+  align-items: center;
+  font-size: 1.5em;
+  text-overflow: ellipsis;
+}
+
+.small-spacer {
+  margin-left: 5px;
+}
+
+.medium-spacer {
+  margin-left: 300px;
+}
+
+.amount {
+  min-width: 50px;
+  text-align: right;
 }

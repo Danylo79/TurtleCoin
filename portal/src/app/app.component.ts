@@ -1,23 +1,70 @@
-import {Component} from '@angular/core';
-import {Coin} from "./data/coin";
-import {Status} from "./data/status";
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {LoginDialogComponent} from './login/login-dialog.component';
+import {MatDialog} from "@angular/material/dialog";
+import {WalletService} from "./services/wallet.service";
+import {Wallet} from "./data/entity/wallet";
+import {SendDialogComponent} from "./send/send-dialog.component";
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
+  providers: []
 })
-export class AppComponent {
-  title = 'ClassroomCoin';
-  statuses: Status[] = [
-    new Status("Healthy", "done"),
-    new Status("Warning", "warning"),
-    new Status("Error", "dangerous")
-  ];
 
-  coins: Coin[] = [
-    new Coin("e2f0d6904de4f3ea86d880faadbd5a87", this.statuses[0]),
-    new Coin("c88643c46a2b73a367ce15b82b9992c2", this.statuses[1]),
-    new Coin("a2b804615aed6a460114247409968290", this.statuses[2])
-  ];
+export class AppComponent implements OnInit {
+  title = 'ClassroomCoin';
+
+  public wallet: Wallet = new Wallet();
+
+  constructor(public dialog: MatDialog, private walletService: WalletService) {
+  }
+
+
+  openLoginDialog(): void {
+    const dialogRef = this.dialog.open(LoginDialogComponent, {
+      width: '250px',
+      data: {},
+      disableClose: true,
+      hasBackdrop: false
+    });
+  }
+
+  openSendDialog() {
+    const dialogRef = this.dialog.open(SendDialogComponent, {
+      width: '250px',
+      data: {
+        wallet: this.wallet
+      },
+      hasBackdrop: false
+    });
+  }
+
+  ngOnInit(): void {
+    let cookie = this.getCookie("turtle-cookie");
+    if (cookie == "") {
+      this.openLoginDialog();
+    } else {
+      let split: string[] = cookie.split("-");
+      this.walletService.getWallet(split[0], split[1], split[2]).then(wallet => {
+        this.wallet = wallet;
+        console.log("Got " + wallet.username);
+      });
+    }
+  }
+
+  private getCookie(name: string) {
+    let ca: Array<string> = document.cookie.split(';');
+    let caLen: number = ca.length;
+    let cookieName = `${name}=`;
+    let c: string;
+
+    for (let i: number = 0; i < caLen; i += 1) {
+      c = ca[i].replace(/^\s+/g, '');
+      if (c.indexOf(cookieName) == 0) {
+        return c.substring(cookieName.length, c.length);
+      }
+    }
+    return '';
+  }
 }

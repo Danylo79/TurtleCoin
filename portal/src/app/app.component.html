@@ -1,35 +1,51 @@
-<mat-toolbar color="primary">
-  <button mat-icon-button aria-label="Example icon-button with menu icon">
-    <mat-icon>menu</mat-icon>
-  </button>
-  <span>Turtle Coin</span>
-  <span class="spacer-auto"></span>
-  <button mat-icon-button aria-label="Coin icon">
-    <mat-icon>monetization_on</mat-icon>
-  </button>
-  <button mat-icon-button aria-label="Dashboard Icon">
-    <mat-icon>space_dashboard</mat-icon>
-  </button>
-</mat-toolbar>
+<app-toolbar></app-toolbar>
 
-<mat-grid-list cols="2" rowHeight="2:1" class="working-area" gutterSize="20">
+<mat-grid-list cols="2" rowHeight="90%" class="working-area" gutterSize="20">
   <mat-grid-tile>
-
+    <div class="list" *ngIf="wallet.username.length > 0">
+      <mat-card class="list-item" *ngFor="let transaction of wallet.ledger">
+        <span>{{transaction.entity}}</span>
+        <span class="spacer-auto"></span>
+        <mat-icon *ngIf="transaction.type == 'inbound'">east</mat-icon>
+        <mat-icon *ngIf="transaction.type == 'outbound'" color="warn">west</mat-icon>
+        <span class="small-spacer"></span>
+        <span class="amount">{{transaction.amount}}</span>
+        <span class="small-spacer"></span>
+        <mat-icon *ngIf="transaction.type == 'inbound'">paid</mat-icon>
+        <mat-icon *ngIf="transaction.type == 'outbound'" color="warn">paid</mat-icon>
+      </mat-card>
+    </div>
   </mat-grid-tile>
 
-  <mat-grid-tile rowspan="2">
-    <mat-list class="coin-list">
-      <mat-list-item *ngFor="let coin of coins">
-        <div class="coin-list-item">
-          <span>{{coin.hash}}</span>
+  <mat-grid-tile>
+      <div class="list">
+        <mat-card class="top-list-item">
+          <span>Username</span>
           <span class="spacer-auto"></span>
-          <mat-icon>{{coin.status.icon}}</mat-icon>
-        </div>
-      </mat-list-item>
-    </mat-list>
-  </mat-grid-tile>
-
-  <mat-grid-tile>
-
+          <span>{{wallet.username}}</span>
+        </mat-card>
+        <mat-card class="top-list-item">
+          <span>Student Number</span>
+          <span class="spacer-auto"></span>
+          <span>{{wallet.studentNumber}}</span>
+        </mat-card>
+        <mat-card class="top-list-item">
+          <span>Homeroom</span>
+          <span class="spacer-auto"></span>
+          <span>{{wallet.homeroom}}</span>
+        </mat-card>
+        <mat-card class="top-list-item">
+          <span>Balance</span>
+          <span class="spacer-auto"></span>
+          <span>{{wallet.coins.length}}</span>
+        </mat-card>
+        <mat-card class="top-list-item">
+          <span>Send Coins</span>
+          <span class="spacer-auto"></span>
+          <button mat-icon-button aria-label="Send Icon" (click)="openSendDialog()">
+            <mat-icon>send</mat-icon>
+          </button>
+        </mat-card>
+      </div>
   </mat-grid-tile>
 </mat-grid-list>

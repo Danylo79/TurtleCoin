@@ -1,41 +1,47 @@
 package dev.dankom.cc.chain.block;
 
-import dev.dankom.cc.chain.wallet.transaction.Transaction;
+import dev.dankom.cc.chain.coin.Coin;
+import dev.dankom.cc.util.EncodingUtil;
 import dev.dankom.cc.util.StringUtil;
 
-import java.util.ArrayList;
+import java.security.PublicKey;
 import java.util.Date;
+import java.util.List;
 
 public class Block {
     public String hash;
     public String previousHash;
-    public String merkleRoot;
-    public ArrayList<Transaction> transactions = new ArrayList<>();
     public long timeStamp;
     public int nonce;
+    public PublicKey sender;
+    public PublicKey recipient;
+    public List<Coin> coins;
 
-    public Block(String previousHash) {
+    public Block(String previousHash, PublicKey sender, PublicKey recipient, List<Coin> coins) {
         this.previousHash = previousHash;
+        this.sender = sender;
+        this.recipient = recipient;
+        this.coins = coins;
         this.timeStamp = new Date().getTime();
 
         this.hash = calculateHash();
     }
 
-    public Block(String hash, String previousHash, String merkleRoot, Transaction transaction, long timeStamp, int nonce) {
+    public Block(String hash, String previousHash, long timeStamp, int nonce, PublicKey sender, PublicKey recipient, List<Coin> coins) {
         this.hash = hash;
         this.previousHash = previousHash;
-        this.merkleRoot = merkleRoot;
-        this.transactions.add(transaction);
         this.timeStamp = timeStamp;
         this.nonce = nonce;
+        this.sender = sender;
+        this.recipient = recipient;
+        this.coins = coins;
     }
 
     public String calculateHash() {
-        return StringUtil.applySha256(previousHash + timeStamp + nonce + merkleRoot);
+        return StringUtil.applySha256(previousHash + timeStamp + nonce);
     }
 
     public void mineBlock(int difficulty) {
-        merkleRoot = StringUtil.getMerkleRoot(transactions);
         String target = StringUtil.getDifficultyString(difficulty);
         while (!hash.substring(0, difficulty).equals(target)) {
             nonce++;
@@ -43,17 +49,15 @@ public class Block {
         }
     }
 
-    public boolean addTransaction(Transaction transaction) {
-        if (transaction == null) return false;
-        if (!"0".equals(previousHash) && !transaction.processTransaction()) {
-            return false;
-        }
-
-        transactions.add(transaction);
-        return true;
+    public boolean isValid() {
+        return hash != null && previousHash != null && timeStamp != -1 && nonce != -1;
     }
 
-    public boolean isValid() {
-        return hash != null && previousHash != null && merkleRoot != null && transactions != null && timeStamp != -1 && nonce != -1;
+    public boolean isRecipient(PublicKey publicKey) {
+        return EncodingUtil.hexFromBytes(publicKey.getEncoded()).equals(EncodingUtil.hexFromBytes(recipient.getEncoded()));
+    }
+
+    public boolean isSender(PublicKey publicKey) {
+        return EncodingUtil.hexFromBytes(publicKey.getEncoded()).equals(EncodingUtil.hexFromBytes(sender.getEncoded()));
     }
 }

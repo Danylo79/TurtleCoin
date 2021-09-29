@@ -1,0 +1,28 @@
+<form ngNoForm method="POST" action="http://localhost:8080/auth/login">
+  <input type="hidden" name="returnUrl" value="http://localhost:4200">
+  <mat-card-content>
+    <!--  Username -->
+    <mat-form-field>
+      <mat-label>Username</mat-label>
+      <input required name="username" matInput>
+    </mat-form-field>
+    <!--  Pin -->
+    <mat-form-field>
+      <mat-label>Pin</mat-label>
+      <input required name="pin" matInput>
+    </mat-form-field>
+    <!--  Room Number -->
+    <mat-form-field>
+      <mat-label>Room Number</mat-label>
+      <input required name="roomNumber" type="number" matInput>
+    </mat-form-field>
+    <!--  Student Number -->
+    <mat-form-field>
+      <mat-label>Student Number</mat-label>
+      <input required name="studentNumber" type="number" matInput>
+    </mat-form-field>
+  </mat-card-content>
+  <mat-card-actions class="field-actions">
+    <button class="submit-button" mat-raised-button type="submit" color="primary">Login</button>
+  </mat-card-actions>
+</form>
