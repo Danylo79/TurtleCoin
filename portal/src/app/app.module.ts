@@ -20,13 +20,14 @@ import {WalletService} from "./services/wallet.service";
 import {ConfigService} from "./services/config.service";
 import {SendDialogComponent} from "./send/send-dialog.component";
 import { ToolbarComponent } from './toolbar/toolbar.component';
+import {MatTabsModule} from '@angular/material/tabs';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginDialogComponent,
     SendDialogComponent,
-    ToolbarComponent
+    ToolbarComponent,
   ],
   imports: [
     BrowserModule,
@@ -43,6 +44,7 @@ import { ToolbarComponent } from './toolbar/toolbar.component';
     MatOptionModule,
     MatInputModule,
     FormsModule,
+    MatTabsModule
   ],
   providers: [
     ConfigService,

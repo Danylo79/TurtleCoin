@@ -1,9 +1,11 @@
+import {environment} from "../../environments/environment";
+
 export class ConfigService {
   public getDataHost(): string {
-    return "http://31.220.108.79:8080";
+    return environment.dataHost;
   }
 
   public getPortalHost(): string {
-    return "http://31.220.108.79:8081";
+    return environment.portalHost;
   }
 }

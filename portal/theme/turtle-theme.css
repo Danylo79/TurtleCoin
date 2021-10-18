@@ -2442,7 +2442,7 @@ mat-row, mat-header-row, mat-footer-row, th.mat-header-cell, td.mat-cell, td.mat
 }
 
 .mat-tab-label, .mat-tab-link {
-  color: #fff
+  color: #4da21f
 }
 
 .mat-tab-label.mat-tab-disabled, .mat-tab-link.mat-tab-disabled {

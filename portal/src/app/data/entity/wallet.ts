@@ -1,8 +1,8 @@
-import {Transaction} from "./transaction";
+import { Transaction } from './transaction';
 
 export class Wallet {
-  public username: string = "";
-  public pin: string = "";
+  public username: string = '';
+  public pin: string = '';
   public homeroom: number = -1;
   public studentNumber: number = -1;
   public jobs: string[] = [];
@@ -10,7 +10,7 @@ export class Wallet {
   public ledger: Transaction[] = [];
 
   constructor(res?: any) {
-    if (typeof res === "undefined") return;
+    if (typeof res === 'undefined') return;
 
     this.username = res.username;
     this.pin = res.pin;
@@ -28,5 +28,9 @@ export class Wallet {
       transaction.formattedTimeStamp = trn.formattedTimeStamp;
       this.ledger.push(transaction);
     }
+  }
+
+  public isAdmin(): boolean {
+    return this.jobs.indexOf('Admin') > -1;
   }
 }

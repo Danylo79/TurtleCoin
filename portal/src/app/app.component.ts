@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {LoginDialogComponent} from './login/login-dialog.component';
 import {MatDialog} from "@angular/material/dialog";
 import {WalletService} from "./services/wallet.service";
