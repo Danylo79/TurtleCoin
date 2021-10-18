@@ -33,4 +33,4 @@ build/
 .vscode/
 
 coin/
-./secret.json
+secret.json
