@@ -91,7 +91,7 @@ public class Wallet {
         String out = "";
         for (int i = 0; i <= size; i++) {
             Random r = new Random();
-            char c = (char)(r.nextInt(26) + 'a');
+            char c = (char) (r.nextInt(26) + 'a');
             out += c;
         }
         return out;

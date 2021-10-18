@@ -2,7 +2,6 @@ package dev.dankom.cc.util;
 
 import dev.dankom.cc.chain.BlockChain;
 import dev.dankom.cc.chain.block.Block;
-import dev.dankom.cc.chain.coin.Coin;
 import dev.dankom.cc.chain.wallet.Wallet;
 import dev.dankom.file.json.JsonObjectBuilder;
 import org.json.simple.JSONObject;

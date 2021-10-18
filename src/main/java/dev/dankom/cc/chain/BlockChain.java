@@ -51,7 +51,6 @@ public class BlockChain {
             JSONObject jo = (JSONObject) o;
             createWallet((String) jo.get("username"), (String) jo.get("pin"), ((Long) jo.get("room")).intValue(), ((Long) jo.get("studentNumber")).intValue(), "Student");
         }
-//        addFunds(getWallet("andrea.gayed"), CoinUtil.mineCoin(difficulty, 10000).toArray(new Coin[]{}));
 
         new ShutdownOperation(new ThreadMethodRunner(() -> save()), "Save", logger);
     }
