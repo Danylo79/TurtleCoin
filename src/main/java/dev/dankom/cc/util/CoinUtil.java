@@ -28,7 +28,6 @@ public class CoinUtil {
             Coin c = new Coin();
             c.mine(difficulty, coins);
             coins.add(c);
-            System.out.println("Added: " + c.getHash());
         }
         return coins;
     }

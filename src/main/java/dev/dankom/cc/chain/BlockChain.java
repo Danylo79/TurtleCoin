@@ -43,14 +43,15 @@ public class BlockChain {
         BlockChain.difficulty = difficulty;
         BlockChain.minimumTransaction = minimumTransaction;
 
-        wallets.clear();
-        createWallet("banker", Wallet.createPin(10), 0, 0, "Banker", "Admin");
-        createWallet("andrea.gayed", Wallet.createPin(10), 710, 0, "Teacher", "Admin");
-        createWallet("danylo.k", Wallet.createPin(5), 710, 14, "Developer", "Admin");
-        for (Object o : ((JSONArray) new JsonFile(new File("./"), "secret").get().get("students"))) {
-            JSONObject jo = (JSONObject) o;
-            createWallet((String) jo.get("username"), (String) jo.get("pin"), ((Long) jo.get("room")).intValue(), ((Long) jo.get("studentNumber")).intValue(), "Student");
-        }
+//        wallets.clear();
+//        createWallet("banker", Wallet.createPin(10), 0, 0, "Banker", "Admin");
+//        createWallet("andrea.gayed", Wallet.createPin(10), 710, 0, "Teacher", "Admin");
+//        createWallet("danylo.k", Wallet.createPin(5), 710, 14, "Developer", "Admin");
+//        for (Object o : ((JSONArray) new JsonFile(new File("./"), "secret").get().get("students"))) {
+//            JSONObject jo = (JSONObject) o;
+//            createWallet((String) jo.get("username"), (String) jo.get("pin"), ((Long) jo.get("room")).intValue(), ((Long) jo.get("studentNumber")).intValue(), "Student");
+//        }
+//        addFunds(getWallet("andrea.gayed"), CoinUtil.mineCoin(difficulty, 10000).toArray(new Coin[]{}));
 
         new ShutdownOperation(new ThreadMethodRunner(() -> save()), "Save", logger);
     }
