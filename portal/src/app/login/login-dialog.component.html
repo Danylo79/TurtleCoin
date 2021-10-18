@@ -1,5 +1,5 @@
-<form ngNoForm method="POST" action="http://localhost:8080/auth/login">
-  <input type="hidden" name="returnUrl" value="http://localhost:4200">
+<form ngNoForm method="POST" action="{{backend}}/auth/login">
+  <input type="hidden" name="returnUrl" value="{{frontend}}">
   <mat-card-content>
     <!--  Username -->
     <mat-form-field>

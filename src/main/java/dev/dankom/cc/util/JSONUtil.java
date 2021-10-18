@@ -1,5 +1,6 @@
 package dev.dankom.cc.util;
 
+import dev.dankom.cc.chain.BlockChain;
 import dev.dankom.cc.chain.block.Block;
 import dev.dankom.cc.chain.coin.Coin;
 import dev.dankom.cc.chain.wallet.Wallet;
@@ -46,6 +47,7 @@ public class JSONUtil {
     }
 
     public static Wallet deserializeWallet(JSONObject jo) {
+        BlockChain.logger.info("BlockChain", "Loading " + jo.get("username"));
         return new Wallet((String) jo.get("username"),
                 (String) jo.get("pin"),
                 ((Long) jo.get("homeroom")).intValue(),

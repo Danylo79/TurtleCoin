@@ -1,0 +1,14 @@
+version: "3.7"
+
+services:
+  event:
+    image: dankom/turtlecoin:latest
+    ports:
+      - "8080:8080"
+    networks:
+      - turtle
+
+networks:
+  turtle:
+    name: turtle
+    driver: bridge

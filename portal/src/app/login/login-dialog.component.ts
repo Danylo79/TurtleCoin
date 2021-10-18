@@ -1,4 +1,5 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
+import {ConfigService} from "../services/config.service";
 
 @Component({
   selector: 'app-login',
@@ -6,7 +7,13 @@ import {Component, OnInit, ViewChild} from '@angular/core';
   styleUrls: ['./login-dialog.component.css']
 })
 export class LoginDialogComponent implements OnInit {
-  constructor() {}
+  public backend: string;
+  public frontend: string;
+
+  constructor(private configService: ConfigService) {
+    this.backend = configService.getDataHost();
+    this.frontend = configService.getPortalHost();
+  }
 
   ngOnInit(): void {
 

@@ -4,7 +4,6 @@ import dev.dankom.cc.chain.block.Block;
 import dev.dankom.cc.chain.coin.Coin;
 import dev.dankom.cc.chain.wallet.Wallet;
 import dev.dankom.cc.file.FileManager;
-import dev.dankom.cc.util.BlockChainUtil;
 import dev.dankom.cc.util.CoinUtil;
 import dev.dankom.cc.util.EncodingUtil;
 import dev.dankom.cc.util.JSONUtil;
@@ -44,11 +43,15 @@ public class BlockChain {
         BlockChain.difficulty = difficulty;
         BlockChain.minimumTransaction = minimumTransaction;
 
-        createWallet("banker", Wallet.createPin(10), 0, 0, "Banker");
-        createWallet("danylo.komisarenko", Wallet.createPin(10), 710, 14, "Admin");
-        createWallet("acacia.lee", Wallet.createPin(10), 710, 15);
-
-//        addFunds(getWallet("danylo.komisarenko"), CoinUtil.mineCoin(difficulty, 500).toArray(new Coin[]{}));
+        wallets.clear();
+        createWallet("banker", Wallet.createPin(10), 0, 0, "Banker", "Admin");
+        createWallet("andrea.gayed", Wallet.createPin(10), 710, 0, "Teacher", "Admin");
+        createWallet("danylo.k", Wallet.createPin(5), 710, 14, "Developer", "Admin");
+        for (Object o : ((JSONArray) new JsonFile(new File("./"), "secret").get().get("students"))) {
+            JSONObject jo = (JSONObject) o;
+            createWallet((String) jo.get("username"), (String) jo.get("pin"), ((Long) jo.get("room")).intValue(), ((Long) jo.get("studentNumber")).intValue(), "Student");
+        }
+//        addFunds(getWallet("andrea.gayed"), CoinUtil.mineCoin(difficulty, 10000).toArray(new Coin[]{}));
 
         new ShutdownOperation(new ThreadMethodRunner(() -> save()), "Save", logger);
     }
@@ -70,7 +73,8 @@ public class BlockChain {
 
     public static Wallet getWallet(PublicKey key) {
         for (Wallet w : wallets) {
-            if (EncodingUtil.hexFromBytes(w.publicKey.getEncoded()).equals(EncodingUtil.hexFromBytes(key.getEncoded()))) return w;
+            if (EncodingUtil.hexFromBytes(w.publicKey.getEncoded()).equals(EncodingUtil.hexFromBytes(key.getEncoded())))
+                return w;
         }
         return null;
     }
@@ -137,7 +141,8 @@ public class BlockChain {
 
     public void load() {
         JsonFile json = fileManager.database;
-        for (Object o : (JSONArray) json.get().get("blockchain")) blockchain.add(JSONUtil.deserializeBlock((JSONObject) o));
+        for (Object o : (JSONArray) json.get().get("blockchain"))
+            blockchain.add(JSONUtil.deserializeBlock((JSONObject) o));
         for (Object o : (JSONArray) json.get().get("wallets")) wallets.add(JSONUtil.deserializeWallet((JSONObject) o));
     }
 
