@@ -7,10 +7,8 @@ import dev.dankom.cc.util.BlockChainUtil;
 import dev.dankom.cc.util.CoinUtil;
 import dev.dankom.cc.util.KeyUtil;
 import dev.dankom.file.json.JsonObjectBuilder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.json.simple.JSONObject;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -44,6 +42,29 @@ public class BlockChainRest {
         } catch (NullPointerException e) {
             return "Failed: " + e.getMessage();
         }
+    }
+
+    @GetMapping("/wallets/getAll")
+    public String getWallets(@CookieValue(name = "turtle") String turtle, HttpServletResponse response) {
+        System.out.print(turtle);
+        List<JSONObject> wallets = new ArrayList<>();
+        if (BlockChain.getWallet(turtle.split("-")[0]).isAdmin()) {
+            for (Wallet w : BlockChain.wallets) {
+                wallets.add(new JsonObjectBuilder()
+                        .addKeyValuePair("username", w.getUsername())
+                        .addKeyValuePair("homeroom", w.getHomeroom())
+                        .addKeyValuePair("studentNumber", w.getStudentNumber())
+                        .addKeyValuePair("pin", w.getPin())
+                        .build());
+            }
+        } else {
+            try {
+                response.sendError(403);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return new JsonObjectBuilder().addArray("wallets", wallets).build().toJSONString();
     }
 
     @PostMapping("/auth/login")

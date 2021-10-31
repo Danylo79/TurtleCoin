@@ -96,4 +96,8 @@ public class Wallet {
         }
         return out;
     }
+
+    public boolean isAdmin() {
+        return getJobs().contains("Admin");
+    }
 }
