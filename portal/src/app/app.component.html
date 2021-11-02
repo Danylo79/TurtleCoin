@@ -66,7 +66,12 @@
     </mat-grid-list>
   </mat-tab>
 
-  <mat-tab *ngIf="wallet.isAdmin()" label="Admin"> 
-    
+  <mat-tab *ngIf="wallet.isAdmin()" label="Admin">
+    <mat-card class="admin-card list-item" *ngFor="let w of wallets">
+      <span class="admin-field">{{ w.username }}</span>
+      <span class="admin-field">{{ w.homeroom }}</span>
+      <span class="admin-field">{{ w.studentNumber }}</span>
+      <app-password-field class="admin-field" [pin]="w.pin"></app-password-field>
+    </mat-card>
   </mat-tab>
 </mat-tab-group>

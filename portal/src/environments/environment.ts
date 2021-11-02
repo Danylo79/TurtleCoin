@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-  dataHost: "http://localhost:8080",
-  portalHost: "http://localhost:4200"
+  dataHost: "http://local.dankom.ca:8080",
+  portalHost: "http://local.dankom.ca:4200"
 };
 
 /*

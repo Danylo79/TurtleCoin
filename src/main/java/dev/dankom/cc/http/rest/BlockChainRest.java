@@ -5,6 +5,7 @@ import dev.dankom.cc.chain.coin.Coin;
 import dev.dankom.cc.chain.wallet.Wallet;
 import dev.dankom.cc.util.BlockChainUtil;
 import dev.dankom.cc.util.CoinUtil;
+import dev.dankom.cc.util.JSONUtil;
 import dev.dankom.cc.util.KeyUtil;
 import dev.dankom.file.json.JsonObjectBuilder;
 import org.json.simple.JSONObject;
@@ -18,6 +19,8 @@ import java.util.List;
 
 @RestController
 public class BlockChainRest {
+    public static final String COOKIE_NAME = "turtle-cookie";
+
     @GetMapping("/echo/{s}")
     public String echo(@PathVariable String s) {
         return s;
@@ -45,17 +48,12 @@ public class BlockChainRest {
     }
 
     @GetMapping("/wallets/getAll")
-    public String getWallets(@CookieValue(name = "turtle") String turtle, HttpServletResponse response) {
-        System.out.print(turtle);
+    public JSONObject getWallets(@CookieValue(name = COOKIE_NAME) String turtle, HttpServletResponse response) {
         List<JSONObject> wallets = new ArrayList<>();
-        if (BlockChain.getWallet(turtle.split("-")[0]).isAdmin()) {
+        Wallet wallet = BlockChain.getWallet(turtle.split("-")[0]);
+        if (wallet != null && wallet.isAdmin()) {
             for (Wallet w : BlockChain.wallets) {
-                wallets.add(new JsonObjectBuilder()
-                        .addKeyValuePair("username", w.getUsername())
-                        .addKeyValuePair("homeroom", w.getHomeroom())
-                        .addKeyValuePair("studentNumber", w.getStudentNumber())
-                        .addKeyValuePair("pin", w.getPin())
-                        .build());
+                wallets.add(JSONUtil.buildWallet(w));
             }
         } else {
             try {
@@ -64,15 +62,14 @@ public class BlockChainRest {
                 e.printStackTrace();
             }
         }
-        return new JsonObjectBuilder().addArray("wallets", wallets).build().toJSONString();
+        return new JsonObjectBuilder().addArray("wallets", wallets).build();
     }
 
     @PostMapping("/auth/login")
     public void login(String returnUrl, String username, String pin, String roomNumber, String studentNumber, HttpServletResponse response) {
         Wallet wallet = BlockChain.getWallet(username, Integer.parseInt(roomNumber), Integer.parseInt(studentNumber));
-        System.out.println(wallet.getPin());
         if (wallet.getPin().equalsIgnoreCase(pin)) {
-            Cookie cookie = new Cookie("turtle-cookie", username + "-" + roomNumber + "-" + studentNumber);
+            Cookie cookie = new Cookie(COOKIE_NAME, username + "-" + roomNumber + "-" + studentNumber);
             cookie.setPath("/");
             response.addCookie(cookie);
             try {

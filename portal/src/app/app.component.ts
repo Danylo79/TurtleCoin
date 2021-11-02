@@ -4,6 +4,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {WalletService} from "./services/wallet.service";
 import {Wallet} from "./data/entity/wallet";
 import {SendDialogComponent} from "./send/send-dialog.component";
+import {AdminService} from "./services/admin.service";
 
 @Component({
   selector: 'app-root',
@@ -16,8 +17,9 @@ export class AppComponent implements OnInit {
   title = 'ClassroomCoin';
 
   public wallet: Wallet = new Wallet();
+  public wallets: Wallet[] = [];
 
-  constructor(public dialog: MatDialog, private walletService: WalletService) {
+  constructor(public dialog: MatDialog, private walletService: WalletService, private adminService: AdminService) {
   }
 
 
@@ -49,6 +51,9 @@ export class AppComponent implements OnInit {
       this.walletService.getWallet(split[0], split[1], split[2]).then(wallet => {
         this.wallet = wallet;
         console.log("Got " + wallet.username);
+      });
+      this.adminService.getWallets().then(wallets => {
+        this.wallets = wallets;
       });
     }
   }

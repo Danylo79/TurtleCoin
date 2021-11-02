@@ -21,6 +21,7 @@ import {ConfigService} from "./services/config.service";
 import {SendDialogComponent} from "./send/send-dialog.component";
 import { ToolbarComponent } from './toolbar/toolbar.component';
 import {MatTabsModule} from '@angular/material/tabs';
+import { PasswordFieldComponent } from './password-field/password-field.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import {MatTabsModule} from '@angular/material/tabs';
     LoginDialogComponent,
     SendDialogComponent,
     ToolbarComponent,
+    PasswordFieldComponent,
   ],
   imports: [
     BrowserModule,
