@@ -1,6 +1,6 @@
 # TurtleCoin
 ## How to Build  
-Make sure have the docker daemon running
+Make sure you have the docker daemon running
 ### Frontend:  
 * ``npm run-scipt build``
 * ``docker build -t dankom/turtleportal .``
